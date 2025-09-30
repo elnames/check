@@ -31,31 +31,39 @@ const questions = [
     }
 ];
 
-// Elementos del DOM
-const screens = {
-    welcome: document.getElementById('welcome-screen'),
-    questions: document.getElementById('questions-screen'),
-    reveal: document.getElementById('reveal-screen'),
-    specialVideos: document.getElementById('special-videos-screen'),
-    confirmation: document.getElementById('confirmation-screen'),
-    tickets: document.getElementById('tickets-screen')
-};
+// Variables para elementos del DOM
+let screens = {};
+let elements = {};
 
-const elements = {
-    startBtn: document.getElementById('start-btn'),
-    questionInput: document.getElementById('question-input'),
-    questionSubmitBtn: document.getElementById('question-submit-btn'),
-    showTicketsBtn: document.getElementById('show-tickets-btn'),
-    showConfirmationBtn: document.getElementById('show-confirmation-btn'),
-    yesBtn: document.getElementById('yes-btn'),
-    restartBtn: document.getElementById('restart-btn'),
-    questionErrorMessage: document.getElementById('question-error-message'),
-    questionSuccessMessage: document.getElementById('question-success-message'),
-    questionTitle: document.getElementById('question-title'),
-    questionHint: document.getElementById('question-hint'),
-    progressText: document.getElementById('progress-text'),
-    progressFill: document.getElementById('progress-fill')
-};
+// Función para inicializar elementos del DOM
+function initializeElements() {
+    screens = {
+        welcome: document.getElementById('welcome-screen'),
+        questions: document.getElementById('questions-screen'),
+        reveal: document.getElementById('reveal-screen'),
+        specialVideos: document.getElementById('special-videos-screen'),
+        confirmation: document.getElementById('confirmation-screen'),
+        tickets: document.getElementById('tickets-screen')
+    };
+
+    elements = {
+        startBtn: document.getElementById('start-btn'),
+        questionInput: document.getElementById('question-input'),
+        questionSubmitBtn: document.getElementById('question-submit-btn'),
+        showTicketsBtn: document.getElementById('show-tickets-btn'),
+        showConfirmationBtn: document.getElementById('show-confirmation-btn'),
+        yesBtn: document.getElementById('yes-btn'),
+        restartBtn: document.getElementById('restart-btn'),
+        questionErrorMessage: document.getElementById('question-error-message'),
+        questionSuccessMessage: document.getElementById('question-success-message'),
+        questionTitle: document.getElementById('question-title'),
+        questionHint: document.getElementById('question-hint'),
+        progressText: document.getElementById('progress-text'),
+        progressFill: document.getElementById('progress-fill')
+    };
+    
+    console.log('Elementos inicializados:', elements);
+}
 
 // Funciones de navegación
 function showScreen(screenName) {
@@ -250,7 +258,11 @@ document.head.appendChild(style);
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('DOM cargado, configurando eventos...');
+    console.log('DOM cargado, inicializando...');
+    
+    // Inicializar elementos
+    initializeElements();
+    
     console.log('Botón start:', elements.startBtn);
     
     // Botón de inicio
@@ -334,4 +346,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    
+    console.log('Todos los event listeners configurados');
 });
