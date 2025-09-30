@@ -7,7 +7,7 @@ const questions = [
     {
         title: "Para continuar, necesito que recuerdes...",
         hint: "¿Cuál fue el primer lugar donde fuimos a comer juntos? 🤔",
-        answers: ['tio tomate', 'tiotomate', 'Tio tomate', 'Tiotomate', 'gabimusic', 'Gabimusic', 'GABIMUSIC']
+        answers: ['tio tomate', 'tiotomate', 'Tio tomate', 'Tiotomate', 'gabimusic', 'Tío tomate', 'tío Tomate', 'tío tomate', 'Tio tomate santiago', 'Tiotomate santiago', 'tiotomate santiago', 'Gabimusic', 'GABIMUSIC']
     },
     {
         title: "Sigamos recordando momentos especiales...",
