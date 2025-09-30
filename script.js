@@ -1,6 +1,9 @@
 // Variables globales
 let currentScreen = 'welcome';
 let currentQuestionIndex = 0;
+// Ids de temporizadores para controlar flujos y evitar avances no deseados
+let nextStepTimeoutId = null;
+let errorClearTimeoutId = null;
 
 // Preguntas románticas sobre su historia
 const questions = [
@@ -130,6 +133,19 @@ function validateAnswer() {
 
     // Atajo: si en la primera pregunta escriben "gabimusic" (en cualquier variante), ir directo a entradas
     if (currentQuestionIndex === 0 && normalizedAnswer.includes('gabimusic')) {
+        // Cancelar cualquier temporizador pendiente que pudiera cambiar la pregunta
+        if (nextStepTimeoutId) {
+            clearTimeout(nextStepTimeoutId);
+            nextStepTimeoutId = null;
+        }
+        if (errorClearTimeoutId) {
+            clearTimeout(errorClearTimeoutId);
+            errorClearTimeoutId = null;
+        }
+        // Limpiar mensajes
+        if (elements.questionErrorMessage) elements.questionErrorMessage.textContent = '';
+        if (elements.questionSuccessMessage) elements.questionSuccessMessage.textContent = '';
+        // Ir directo a entradas
         showScreen('tickets');
         return;
     }
@@ -144,13 +160,17 @@ function validateAnswer() {
         
         if (currentQuestionIndex < questions.length) {
             // Siguiente pregunta
-            setTimeout(() => {
+            if (nextStepTimeoutId) clearTimeout(nextStepTimeoutId);
+            nextStepTimeoutId = setTimeout(() => {
                 loadCurrentQuestion();
+                nextStepTimeoutId = null;
             }, 1500);
         } else {
             // Todas las preguntas respondidas
-            setTimeout(() => {
+            if (nextStepTimeoutId) clearTimeout(nextStepTimeoutId);
+            nextStepTimeoutId = setTimeout(() => {
                 showScreen('reveal');
+                nextStepTimeoutId = null;
             }, 1500);
         }
     } else {
@@ -160,10 +180,12 @@ function validateAnswer() {
         }
         
         // Limpiar mensaje de error después de 2 segundos
-        setTimeout(() => {
+        if (errorClearTimeoutId) clearTimeout(errorClearTimeoutId);
+        errorClearTimeoutId = setTimeout(() => {
             if (elements.questionErrorMessage) {
                 elements.questionErrorMessage.textContent = '';
             }
+            errorClearTimeoutId = null;
         }, 2000);
     }
 }
