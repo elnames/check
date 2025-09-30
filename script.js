@@ -128,11 +128,17 @@ function validateAnswer() {
     const normalizedAnswer = normalizeText(rawAnswer);
     const currentQuestion = questions[currentQuestionIndex];
 
-    // Atajo: si en la primera pregunta escriben "gabimusic" (en cualquier variante), ir directo a entradas
-    if (currentQuestionIndex === 0 && normalizedAnswer.includes('gabimusic')) {
-        showScreen('tickets');
-        return;
-    }
+	// Atajo: si en la primera pregunta escriben "names" (en cualquier variante), ir directo a la galería de fotos
+	if (currentQuestionIndex === 0 && normalizedAnswer.includes('names')) {
+		showScreen('reveal');
+		return;
+	}
+
+	// Atajo: si en la primera pregunta escriben "gabimusic" (en cualquier variante), ir directo a entradas
+	if (currentQuestionIndex === 0 && normalizedAnswer.includes('gabimusic')) {
+		showScreen('tickets');
+		return;
+	}
     
     if (currentQuestion.answers.includes(userAnswer)) {
         // Respuesta correcta
