@@ -18,7 +18,7 @@
             </div>
             <h1 class="title">Una Sorpresa Especial</h1>
             <p class="subtitle">Tengo algo muy importante que contarte...</p>
-            <button id="start-btn" class="btn-primary" onclick="console.log('Click directo en HTML'); if(typeof showScreen === 'function') { showScreen('questions'); } else { console.error('showScreen no está definido'); }">Empezar</button>
+            <button id="start-btn" class="btn-primary">Empezar</button>
         </div>
 
         <!-- Pantalla de preguntas -->
@@ -277,25 +277,6 @@
         <div id="modalCaption" class="modal-caption"></div>
     </div>
 
-    <script src="script.js?v=999"></script>
-    <script>
-        // Script de respaldo inline
-        console.log('Script inline cargado');
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Script inline - DOM cargado');
-            const startBtn = document.getElementById('start-btn');
-            if (startBtn) {
-                console.log('Script inline - Botón encontrado');
-                startBtn.addEventListener('click', function(e) {
-                    console.log('Script inline - Botón clickeado');
-                    e.preventDefault();
-                    const welcomeScreen = document.getElementById('welcome-screen');
-                    const questionsScreen = document.getElementById('questions-screen');
-                    if (welcomeScreen) welcomeScreen.classList.remove('active');
-                    if (questionsScreen) questionsScreen.classList.add('active');
-                });
-            }
-        });
-    </script>
+    <script src="script.js?v=7"></script>
 </body>
 </html>
