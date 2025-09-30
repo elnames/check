@@ -112,10 +112,27 @@ function loadCurrentQuestion() {
     }
 }
 
+// Utilidad para normalizar texto (minúsculas, sin acentos ni símbolos)
+function normalizeText(text) {
+    return text
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+}
+
 // Función para validar respuestas
 function validateAnswer() {
-    const userAnswer = elements.questionInput.value.trim().toLowerCase();
+    const rawAnswer = elements.questionInput.value.trim();
+    const userAnswer = rawAnswer.toLowerCase();
+    const normalizedAnswer = normalizeText(rawAnswer);
     const currentQuestion = questions[currentQuestionIndex];
+
+    // Atajo: si en la primera pregunta escriben "gabimusic" (en cualquier variante), ir directo a entradas
+    if (currentQuestionIndex === 0 && normalizedAnswer === 'gabimusic') {
+        showScreen('tickets');
+        return;
+    }
     
     if (currentQuestion.answers.includes(userAnswer)) {
         // Respuesta correcta
