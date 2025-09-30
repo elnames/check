@@ -431,33 +431,60 @@ function openModal(src, caption, type) {
     const modalImage = document.getElementById('modalImage');
     const modalVideo = document.getElementById('modalVideo');
     const modalCaption = document.getElementById('modalCaption');
-
+    
     console.log('Abriendo modal:', { src, caption, type });
-
+    
     modal.style.display = 'block';
     modalCaption.textContent = caption;
-
+    
     if (type === 'video') {
+        const encodedSrc = encodeURI(src);
         modalImage.style.display = 'none';
         modalVideo.style.display = 'block';
-        modalVideo.src = src;
-        modalVideo.play();
+        
+        // Configuración para mejor compatibilidad móvil/navegadores
+        modalVideo.setAttribute('playsinline', '');
+        modalVideo.setAttribute('webkit-playsinline', '');
+        modalVideo.preload = 'metadata';
+        modalVideo.muted = true; // asegura autoplay tras gesto del usuario
+        
+        // Reiniciar y cargar antes de reproducir
+        try {
+            modalVideo.pause();
+            modalVideo.removeAttribute('src');
+            modalVideo.load();
+        } catch (e) {
+            console.warn('No se pudo resetear el video previamente:', e);
+        }
+        
+        modalVideo.src = encodedSrc;
+        modalVideo.load();
+        modalVideo.play().catch((err) => {
+            console.warn('Reproducción bloqueada/pendiente. Intentando mostrar controles:', err);
+        });
     } else {
         modalVideo.style.display = 'none';
         modalImage.style.display = 'block';
         modalImage.src = src;
     }
-
+    
     console.log('Caption establecida:', modalCaption.textContent);
 }
 
 function closeModal() {
     const modal = document.getElementById('imageModal');
     const modalVideo = document.getElementById('modalVideo');
-
+    
     modal.style.display = 'none';
-    modalVideo.pause();
-    modalVideo.currentTime = 0;
+    try {
+        modalVideo.pause();
+        modalVideo.currentTime = 0;
+        // Liberar el src para cortar descargas en background
+        modalVideo.removeAttribute('src');
+        modalVideo.load();
+    } catch (e) {
+        console.warn('No se pudo limpiar el video al cerrar:', e);
+    }
 }
 
 // Función para descargar PDF
