@@ -1,0 +1,20 @@
+# Archivos de video grandes
+img/20250918_225314.mp4
+*.mp4
+*.mov
+*.avi
+
+# Archivos de imagen grandes
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Archivos PDF
+*.pdf
+
+# Archivos temporales
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
