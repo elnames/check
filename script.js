@@ -129,7 +129,7 @@ function validateAnswer() {
     const currentQuestion = questions[currentQuestionIndex];
 
     // Atajo: si en la primera pregunta escriben "gabimusic" (en cualquier variante), ir directo a entradas
-    if (currentQuestionIndex === 0 && normalizedAnswer === 'gabimusic') {
+    if (currentQuestionIndex === 0 && normalizedAnswer.includes('gabimusic')) {
         showScreen('tickets');
         return;
     }
