@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Una Sorpresa Especial 💕</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Pantalla de bienvenida -->
+        <div id="welcome-screen" class="screen active">
+            <div class="heart-container">
+                <div class="heart"></div>
+                <div class="heart"></div>
+                <div class="heart"></div>
+            </div>
+            <h1 class="title">Una Sorpresa Especial</h1>
+            <p class="subtitle">Tengo algo muy importante que contarte...</p>
+            <button id="start-btn" class="btn-primary">Empezar</button>
+        </div>
+
+        <!-- Pantalla de preguntas -->
+        <div id="questions-screen" class="screen">
+            <div class="questions-container">
+                <div class="question-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <p class="progress-text" id="progress-text">Pregunta 1 de 5</p>
+                </div>
+                
+                <div class="rose-container">
+                    <div class="rose"></div>
+                </div>
+                
+                <h2 id="question-title">Para continuar, necesito que recuerdes...</h2>
+                <p class="question-hint" id="question-hint">¿Cuál fue el primer lugar donde fuimos a comer juntos? 🤔</p>
+                
+                <div class="input-container">
+                    <input type="text" id="question-input" placeholder="Escribe la respuesta aquí..." maxlength="30">
+                    <button id="question-submit-btn" class="btn-secondary">Continuar</button>
+                </div>
+                
+                <div id="question-error-message" class="error-message"></div>
+                <div id="question-success-message" class="success-message"></div>
+            </div>
+        </div>
+
+        <!-- Pantalla de revelación -->
+        <div id="reveal-screen" class="screen">
+            <div class="reveal-container">
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                <div class="confetti"></div>
+                
+                <h2 class="reveal-title">¡Correcto! 🎉</h2>
+                <p class="reveal-subtitle">Todos estos momentos son especiales para nosotros...</p>
+                
+                <!-- Galería de fotos y videos -->
+                <div class="photo-gallery">
+                    <div class="gallery-item" onclick="openModal('img/20250830_014323.jpg', 'Eres la luz de mis días 💕', 'image')">
+                        <img src="img/20250830_014323.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Eres la luz de mis días 💕</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/20250830_012017.jpg', 'Contigo cada momento es mágico ✨', 'image')">
+                        <img src="img/20250830_012017.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Contigo cada momento es mágico ✨</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/IMG_20250914_182436_222.jpg', 'Tu sonrisa ilumina mi mundo 🌟', 'image')">
+                        <img src="img/IMG_20250914_182436_222.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Tu sonrisa ilumina mi mundo 🌟</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/20250928_222713.jpg', 'Juntos soñamos en grande 💫', 'image')">
+                        <img src="img/20250928_222713.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Juntos soñamos en grande 💫</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/IMG_20250821_063243_355.jpg', 'Eres mi felicidad completa 💖', 'image')">
+                        <img src="img/IMG_20250821_063243_355.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Eres mi felicidad completa 💖</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/IMG_20250707_170013_453.jpg', 'Contigo todo es perfecto 🥰', 'image')">
+                        <img src="img/IMG_20250707_170013_453.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Contigo todo es perfecto 🥰</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/IMG_20250707_170003_288.jpg', 'Mi corazón late por ti 💓', 'image')">
+                        <img src="img/IMG_20250707_170003_288.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Mi corazón late por ti 💓</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/IMG_20250707_170001_931.jpg', 'Eres mi razón de sonreír 😊', 'image')">
+                        <img src="img/IMG_20250707_170001_931.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Eres mi razón de sonreír 😊</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/20250918_225845.jpg', 'Juntos creamos recuerdos únicos 💝', 'image')">
+                        <img src="img/20250918_225845.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Juntos creamos recuerdos únicos 💝</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/20250914_190753.jpg', 'Tu amor es mi mayor tesoro 💎', 'image')">
+                        <img src="img/20250914_190753.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Tu amor es mi mayor tesoro 💎</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/20250824_001101.jpg', 'Contigo siento que puedo volar 🕊️', 'image')">
+                        <img src="img/20250824_001101.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Contigo siento que puedo volar 🕊️</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/IMG-20250905-WA0298.jpg', 'Eres mi estrella brillante ⭐', 'image')">
+                        <img src="img/IMG-20250905-WA0298.jpg" alt="Momento especial juntos" loading="lazy">
+                        <div class="photo-overlay">Eres mi estrella brillante ⭐</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/VID_20250830_120500_562.mp4', 'Momentos únicos contigo 🥰', 'video')">
+                        <video muted>
+                            <source src="img/VID_20250830_120500_562.mp4" type="video/mp4">
+                        </video>
+                        <div class="photo-overlay">Momentos únicos contigo 🥰</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/VID_20250830_120508_497.mp4', 'Risas que llenan mi alma 😄', 'video')">
+                        <video muted>
+                            <source src="img/VID_20250830_120508_497.mp4" type="video/mp4">
+                        </video>
+                        <div class="photo-overlay">Risas que llenan mi alma 😄</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/VID_20250707_162625_986.mp4', 'Recuerdos que atesoro 💖', 'video')">
+                        <video muted>
+                            <source src="img/VID_20250707_162625_986.mp4" type="video/mp4">
+                        </video>
+                        <div class="photo-overlay">Recuerdos que atesoro 💖</div>
+                    </div>
+                </div>
+                
+                <button id="show-tickets-btn" class="btn-primary">Ver Videos Especiales</button>
+            </div>
+        </div>
+
+
+        <!-- Pantalla de videos especiales -->
+        <div id="special-videos-screen" class="screen">
+            <div class="special-videos-container">
+                <div class="ticket-glow"></div>
+                
+                <!-- Videos especiales -->
+                <div class="videos-container">
+                    <div class="special-videos-main">
+                        <div class="special-video-container">
+                            <video class="special-video" controls autoplay muted loop>
+                                <source src="img/El dia que nos conocimos y nuestro primer beso.mp4" type="video/mp4">
+                                Tu navegador no soporta videos.
+                            </video>
+                            <p class="video-caption">"El día que nos conocimos y nuestro primer beso..." 💕</p>
+                        </div>
+                        
+                        <div class="special-video-container">
+                            <video class="special-video" controls muted>
+                                <source src="img/El dia que volviste.mp4" type="video/mp4">
+                                Tu navegador no soporta videos.
+                            </video>
+                            <p class="video-caption">"El día que volviste de Europa, mi corazón se llenó de alegría..." 💕</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message-container">
+                    <p class="special-message">
+                        Después de recordar todos estos bellos momentos juntos, tengo algo muy especial que preguntarte... 💕
+                    </p>
+                </div>
+
+                <button id="show-confirmation-btn" class="btn-primary">Ver mi Sorpresa Final</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de confirmación -->
+        <div id="confirmation-screen" class="screen">
+            <div class="confirmation-container">
+                <div class="heart-container">
+                    <div class="heart"></div>
+                    <div class="heart"></div>
+                    <div class="heart"></div>
+                </div>
+                
+                <h2 class="confirmation-title">¿Respondiste a la pregunta que te hice? 💕</h2>
+                
+                <div class="confirmation-buttons">
+                    <button id="yes-btn" class="btn-primary">¡SÍ! 💕</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla de entradas -->
+        <div id="tickets-screen" class="screen">
+            <div class="tickets-container">
+                <div class="ticket-glow"></div>
+                
+                <div class="message-container">
+                    <p class="special-message">
+                        Esperando que me hayas dicho que sí jajaj... 💕
+                    </p>
+                </div>
+                
+                <h2 class="tickets-title">¡ENTRADAS ESPECIALES! 🎵</h2>
+                
+                <div class="ticket-card">
+                    <div class="ticket-header">
+                        <div class="ticket-icon">🎫</div>
+                        <h3>HSU SuperKlub</h3>
+                    </div>
+                    <div class="ticket-content">
+                        <div class="ticket-info">
+                            <div class="ticket-details">
+                                <p><strong>Evento:</strong> HSU SuperKlub</p>
+                                <p><strong>Para:</strong>  Nosotros 💕</p>
+                                <p><strong>Fecha:</strong> 10 de enero 2026</p>
+                                <p><strong>Incluye:</strong> Una noche inolvidable juntos</p>
+                            </div>
+                            <div class="ticket-actions">
+                                <button class="download-btn" onclick="downloadPDF('img/ticket-49757310.pdf')">
+                                    📄 Descargar PDF de HSU
+                                </button>
+                            </div>
+                        </div>
+                        <div class="ticket-qr">
+                            <div class="qr-container" onclick="showQR('img/QR SUPERKLUB.png', 'QR Superklub')">
+                                <img src="img/QR SUPERKLUB.png" alt="QR Superklub" class="qr-image">
+                                <div class="qr-overlay">
+                                    <span class="qr-text">🔍 Toca para ver</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ticket-card">
+                    <div class="ticket-header">
+                        <div class="ticket-icon">🎫</div>
+                        <h3>Creamfields 2025</h3>
+                    </div>
+                    <div class="ticket-content">
+                        <div class="ticket-info">
+                            <div class="ticket-details">
+                                <p><strong>Evento:</strong> Creamfields Chile 2025</p>
+                                <p><strong>Para:</strong> Para mi Polola 💕</p>
+                                <p><strong>Fecha:</strong> 11 de octubre 2025</p>
+                                <p><strong>Incluye:</strong> Una experiencia épica</p>
+                            </div>
+                            <div class="ticket-footer">
+                                <p class="romantic-message">
+                                    "Quiero que disfrutes de la mejor música, porque te mereces lo mejor" 🎶💕
+                                </p>
+                            </div>
+                        </div>
+                        <div class="ticket-qr">
+                            <div class="qr-container" onclick="showQR('img/Creamfields.png', 'QR Creamfields - Disponible desde el 1 de octubre')">
+                                <img src="img/Creamfields.png" alt="QR Creamfields" class="qr-image">
+                                <div class="qr-overlay">
+                                    <span class="qr-text">🔍 Toca para ver</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <button id="restart-btn" class="btn-secondary">Volver a empezar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para ver fotos/videos en grande -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img id="modalImage" class="modal-content" src="" alt="">
+        <video id="modalVideo" class="modal-content" controls style="display: none;">
+            <source src="" type="video/mp4">
+        </video>
+        <div id="modalCaption" class="modal-caption"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
