@@ -431,23 +431,23 @@ function openModal(src, caption, type) {
     const modalImage = document.getElementById('modalImage');
     const modalVideo = document.getElementById('modalVideo');
     const modalCaption = document.getElementById('modalCaption');
-    
+
     console.log('Abriendo modal:', { src, caption, type });
-    
+
     modal.style.display = 'block';
     modalCaption.textContent = caption;
-    
+
     if (type === 'video') {
         const encodedSrc = encodeURI(src);
         modalImage.style.display = 'none';
         modalVideo.style.display = 'block';
-        
+
         // Configuración para mejor compatibilidad móvil/navegadores
         modalVideo.setAttribute('playsinline', '');
         modalVideo.setAttribute('webkit-playsinline', '');
         modalVideo.preload = 'metadata';
         modalVideo.muted = true; // asegura autoplay tras gesto del usuario
-        
+
         // Reiniciar y cargar antes de reproducir
         try {
             modalVideo.pause();
@@ -456,7 +456,7 @@ function openModal(src, caption, type) {
         } catch (e) {
             console.warn('No se pudo resetear el video previamente:', e);
         }
-        
+
         modalVideo.src = encodedSrc;
         modalVideo.load();
         modalVideo.play().catch((err) => {
@@ -467,14 +467,14 @@ function openModal(src, caption, type) {
         modalImage.style.display = 'block';
         modalImage.src = src;
     }
-    
+
     console.log('Caption establecida:', modalCaption.textContent);
 }
 
 function closeModal() {
     const modal = document.getElementById('imageModal');
     const modalVideo = document.getElementById('modalVideo');
-    
+
     modal.style.display = 'none';
     try {
         modalVideo.pause();
