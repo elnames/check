@@ -53,7 +53,6 @@ function initializeElements() {
         questionInput: document.getElementById('question-input'),
         questionSubmitBtn: document.getElementById('question-submit-btn'),
         showTicketsBtn: document.getElementById('show-tickets-btn'),
-        showConfirmationBtn: document.getElementById('show-confirmation-btn'),
         yesBtn: document.getElementById('yes-btn'),
         restartBtn: document.getElementById('restart-btn'),
         questionErrorMessage: document.getElementById('question-error-message'),
@@ -903,16 +902,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Botón para mostrar confirmación
-    if (elements.showConfirmationBtn) {
-        elements.showConfirmationBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('Mostrando confirmación...');
-            showScreen('confirmation');
-        });
-    }
-
     // Botón de confirmación (¡SÍ!)
     if (elements.yesBtn) {
         elements.yesBtn.addEventListener('click', (e) => {
@@ -931,33 +920,33 @@ document.addEventListener('DOMContentLoaded', function () {
             const container = noBtn.parentElement;
             const containerRect = container.getBoundingClientRect();
             const btnRect = noBtn.getBoundingClientRect();
-            
+
             // Calcular posiciones aleatorias dentro del contenedor
             const maxX = window.innerWidth - btnRect.width - 40;
             const maxY = window.innerHeight - btnRect.height - 40;
-            
+
             const randomX = Math.random() * maxX;
             const randomY = Math.random() * maxY;
-            
+
             // Aplicar posición absoluta
             noBtn.style.position = 'fixed';
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
             noBtn.style.zIndex = '9999';
         }
-        
+
         // Desktop: mouseover
         noBtn.addEventListener('mouseover', (e) => {
             e.preventDefault();
             moveNoButton();
         });
-        
+
         // Móvil: touchstart
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             moveNoButton();
         });
-        
+
         // Click (por si acaso)
         noBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -1038,16 +1027,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Botones de "Volver"
-    const backFromSpecialVideosBtn = document.getElementById('back-from-special-videos-btn');
     const backFromConfirmationBtn = document.getElementById('back-from-confirmation-btn');
     const backFromTicketsBtn = document.getElementById('back-from-tickets-btn');
 
-    if (backFromSpecialVideosBtn) {
-        backFromSpecialVideosBtn.addEventListener('click', () => showScreen('reveal'));
-    }
-
     if (backFromConfirmationBtn) {
-        backFromConfirmationBtn.addEventListener('click', () => showScreen('specialVideos'));
+        backFromConfirmationBtn.addEventListener('click', () => showScreen('reveal'));
     }
 
     if (backFromTicketsBtn) {
