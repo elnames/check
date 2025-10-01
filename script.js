@@ -301,7 +301,7 @@ function closePINModal() {
     const pinModal = document.getElementById('pin-modal');
     const pinInput = document.getElementById('pin-input');
     const pinError = document.getElementById('pin-error');
-    
+
     if (pinModal) {
         pinModal.classList.remove('active');
     }
@@ -318,11 +318,11 @@ function openUploadModal() {
     const uploadModal = document.getElementById('uploadModal');
     const fileInput = document.getElementById('media-upload');
     const captionInput = document.getElementById('media-caption');
-    
+
     if (uploadModal) {
         uploadModal.classList.add('active');
     }
-    
+
     // Limpiar formulario
     if (fileInput) fileInput.value = '';
     if (captionInput) captionInput.value = '';
@@ -331,7 +331,7 @@ function openUploadModal() {
 // Función para cerrar modal de subida de archivos
 function closeUploadModal() {
     const uploadModal = document.getElementById('uploadModal');
-    
+
     if (uploadModal) {
         uploadModal.classList.remove('active');
     }
@@ -506,6 +506,41 @@ async function deleteMedia(mediaId) {
     }
 }
 
+// Función para comprimir imagen
+function compressImage(file, maxWidth = 1200, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // Calcular nuevo tamaño manteniendo proporción
+                if (width > maxWidth) {
+                    height = (height / width) * maxWidth;
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convertir a base64 con compresión
+                const compressedDataURL = canvas.toDataURL('image/jpeg', quality);
+                resolve(compressedDataURL);
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
 // Función para agregar media a la galería
 async function addMediaToGallery() {
     const fileInput = document.getElementById('media-upload');
@@ -517,7 +552,7 @@ async function addMediaToGallery() {
     }
 
     const file = fileInput.files[0];
-    const caption = captionInput.value.trim() || 'Un momento especial 💕'; // Si está vacío, usa un texto por defecto
+    const caption = captionInput.value.trim() || 'Un momento especial 💕';
 
     // Mostrar loading
     const addBtn = document.getElementById('add-media-btn');
@@ -526,49 +561,71 @@ async function addMediaToGallery() {
     addBtn.disabled = true;
 
     try {
-        const reader = new FileReader();
+        const isVideo = file.type.startsWith('video/');
+        let mediaURL;
 
-        reader.onload = async function (e) {
-            const isVideo = file.type.startsWith('video/');
-            const mediaURL = e.target.result;
-
-            // Crear objeto de media
-            const newMedia = {
-                url: mediaURL,
-                caption: caption,
-                type: isVideo ? 'video' : 'image',
-                timestamp: Date.now()
-            };
-
-            // Guardar en Firebase
-            const docId = await saveMediaToFirebase(newMedia);
+        if (isVideo) {
+            // Para videos, leer directamente (advertir si es muy grande)
+            if (file.size > 5 * 1024 * 1024) { // 5MB
+                alert('⚠️ El video es muy grande. Por favor selecciona un video más pequeño (máx 5MB).');
+                addBtn.innerHTML = originalText;
+                addBtn.disabled = false;
+                return;
+            }
             
-            // Agregar al array local con el ID de Firebase
-            newMedia.id = docId;
-            userMedia.unshift(newMedia); // Agregar al inicio
-            renderUserMedia();
+            const reader = new FileReader();
+            mediaURL = await new Promise((resolve, reject) => {
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        } else {
+            // Para imágenes, comprimir
+            addBtn.innerHTML = '⏳ Comprimiendo...';
+            mediaURL = await compressImage(file);
+        }
 
-            // Limpiar formulario
-            fileInput.value = '';
-            captionInput.value = '';
+        addBtn.innerHTML = '⏳ Guardando...';
 
-            // Restaurar botón
-            addBtn.innerHTML = originalText;
-            addBtn.disabled = false;
-
-            // Cerrar modal
-            closeUploadModal();
-
-            // Mensaje de éxito
-            alert('¡Recuerdo agregado con éxito! 💕');
+        // Crear objeto de media
+        const newMedia = {
+            url: mediaURL,
+            caption: caption,
+            type: isVideo ? 'video' : 'image',
+            timestamp: Date.now()
         };
 
-        reader.readAsDataURL(file);
+        // Guardar en Firebase
+        const docId = await saveMediaToFirebase(newMedia);
+        
+        // Agregar al array local con el ID de Firebase
+        newMedia.id = docId;
+        userMedia.unshift(newMedia);
+        renderUserMedia();
+
+        // Limpiar formulario
+        fileInput.value = '';
+        captionInput.value = '';
+
+        // Restaurar botón
+        addBtn.innerHTML = originalText;
+        addBtn.disabled = false;
+
+        // Cerrar modal
+        closeUploadModal();
+
+        // Mensaje de éxito
+        alert('¡Recuerdo agregado con éxito! 💕');
     } catch (error) {
         console.error('Error al agregar media:', error);
         addBtn.innerHTML = originalText;
         addBtn.disabled = false;
-        alert('⚠️ Error al subir el recuerdo. Intenta de nuevo.');
+        
+        if (error.message && error.message.includes('1048487')) {
+            alert('⚠️ El archivo es muy grande. Por favor selecciona uno más pequeño o de menor calidad.');
+        } else {
+            alert('⚠️ Error al subir el recuerdo. Intenta de nuevo.');
+        }
     }
 }
 
@@ -768,7 +825,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Modal de upload listeners
     const uploadModal = document.getElementById('uploadModal');
-    
+
     if (uploadModal) {
         uploadModal.addEventListener('click', function (e) {
             if (e.target === uploadModal) {
