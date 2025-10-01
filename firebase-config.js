@@ -17,12 +17,12 @@ try {
     console.log('✅ Firebase inicializado correctamente');
     console.log('📦 Proyecto:', firebaseConfig.projectId);
 
-    // Referencias a servicios
+    // Solo Firestore para metadata (los archivos van a Cloudinary)
     window.db = firebase.firestore();
-    window.storage = firebase.storage();
 
-    console.log('✅ Firestore y Storage listos');
-    console.log('🔥 Firebase completamente configurado - ¡Listo para subir recuerdos a la nube!');
+    console.log('✅ Firestore listo (metadata)');
+    console.log('☁️ Archivos se subirán a Cloudinary');
+    console.log('🔥 Sistema completamente configurado!');
 } catch (error) {
     console.error('❌ Error al inicializar Firebase:', error);
     alert('⚠️ Error al conectar con Firebase. Verifica la configuración.');

@@ -359,25 +359,33 @@ async function loadUserMedia() {
     }
 }
 
-// Función para subir archivo a Firebase Storage
-async function uploadToFirebaseStorage(file, type) {
+// Función para subir archivo a Cloudinary
+async function uploadToCloudinary(file, type) {
     try {
-        const timestamp = Date.now();
-        const fileName = `${type}_${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
-        const storageRef = storage.ref(`memories/${fileName}`);
+        console.log('📤 Subiendo a Cloudinary:', file.name);
         
-        console.log('Subiendo archivo a Storage:', fileName);
+        // Crear FormData
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
+        formData.append('folder', 'propuesta-indecente');
         
-        // Subir archivo
-        const snapshot = await storageRef.put(file);
+        // Subir a Cloudinary
+        const response = await fetch(CLOUDINARY_UPLOAD_URL, {
+            method: 'POST',
+            body: formData
+        });
         
-        // Obtener URL de descarga
-        const downloadURL = await snapshot.ref.getDownloadURL();
-        console.log('✅ Archivo subido a Storage:', downloadURL);
+        if (!response.ok) {
+            throw new Error(`Error al subir: ${response.status}`);
+        }
         
-        return downloadURL;
+        const data = await response.json();
+        console.log('✅ Archivo subido a Cloudinary:', data.secure_url);
+        
+        return data.secure_url;
     } catch (error) {
-        console.error('❌ Error subiendo a Storage:', error);
+        console.error('❌ Error subiendo a Cloudinary:', error);
         throw error;
     }
 }
@@ -603,7 +611,7 @@ async function addMediaToGallery() {
 
     try {
         const isVideo = file.type.startsWith('video/');
-        
+
         // Validar tamaño de video (máx 10MB para Storage)
         if (isVideo && file.size > 10 * 1024 * 1024) {
             alert('⚠️ El video es muy grande. Por favor selecciona un video más pequeño (máx 10MB).');
@@ -611,7 +619,7 @@ async function addMediaToGallery() {
             addBtn.disabled = false;
             return;
         }
-        
+
         // Validar tamaño de imagen (máx 5MB para Storage)
         if (!isVideo && file.size > 5 * 1024 * 1024) {
             alert('⚠️ La imagen es muy grande. Por favor selecciona una imagen más pequeña (máx 5MB).');
@@ -620,9 +628,9 @@ async function addMediaToGallery() {
             return;
         }
 
-        // Subir archivo a Firebase Storage
+        // Subir archivo a Cloudinary
         addBtn.innerHTML = '☁️ Subiendo a la nube...';
-        const downloadURL = await uploadToFirebaseStorage(file, isVideo ? 'video' : 'image');
+        const downloadURL = await uploadToCloudinary(file, isVideo ? 'video' : 'image');
 
         // Crear objeto de media con la URL de Storage
         addBtn.innerHTML = '⏳ Guardando...';
@@ -658,21 +666,21 @@ async function addMediaToGallery() {
         console.error('Error al agregar media:', error);
         addBtn.innerHTML = originalText;
         addBtn.disabled = false;
-        
+
         let errorMsg = '⚠️ Error al subir el recuerdo.';
-        
+
         if (error.message) {
-            if (error.message.includes('storage/unauthorized')) {
-                errorMsg = '⚠️ Error de permisos en Storage. Verifica las reglas de seguridad de Firebase.';
-            } else if (error.message.includes('storage/quota-exceeded')) {
+            if (error.message.includes('401') || error.message.includes('unauthorized')) {
+                errorMsg = '⚠️ Error de configuración de Cloudinary. Verifica el upload preset.';
+            } else if (error.message.includes('quota') || error.message.includes('exceeded')) {
                 errorMsg = '⚠️ Se acabó el espacio de almacenamiento.';
-            } else if (error.message.includes('network')) {
+            } else if (error.message.includes('network') || error.message.includes('Failed to fetch')) {
                 errorMsg = '⚠️ Error de conexión. Verifica tu internet.';
             } else {
                 errorMsg += ' ' + error.message;
             }
         }
-        
+
         alert(errorMsg);
     }
 }
