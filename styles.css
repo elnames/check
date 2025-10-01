@@ -266,7 +266,7 @@ body::before {
 }
 
 .screen {
-    display: none;
+    display: none !important;
     text-align: center;
     width: 100%;
     min-height: 100vh;
@@ -275,7 +275,7 @@ body::before {
 }
 
 .screen.active {
-    display: flex;
+    display: flex !important;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -428,6 +428,9 @@ body::before {
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     max-height: 90vh;
     overflow-y: auto;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .question-progress {
@@ -568,9 +571,10 @@ body::before {
     color: white;
     position: relative;
     width: 100%;
-    max-width: 100%;
+    max-width: 1200px;
     padding: 20px;
     box-sizing: border-box;
+    margin: 0 auto;
 }
 
 /* Sección de subida de archivos */
@@ -928,6 +932,9 @@ body::before {
     max-height: 90vh;
     overflow-y: auto;
     padding: 20px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
 }
 
 .ticket-glow {
@@ -1173,6 +1180,9 @@ body::before {
     color: white;
     max-height: 90vh;
     overflow-y: auto;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
 .confirmation-title {
@@ -1256,6 +1266,7 @@ body::before {
     padding: 30px 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: 100%;
     max-width: 900px;
     margin: 0 auto;
     overflow: hidden;
