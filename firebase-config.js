@@ -17,6 +17,13 @@ try {
 
     // Solo Firestore para metadata (los archivos van a Cloudinary)
     window.db = firebase.firestore();
+    // Alias global para compatibilidad con código legado que usa `db` sin `window.`
+    try {
+        // `globalThis` existe en navegadores modernos; si no, cae en `window`
+        (typeof globalThis !== 'undefined' ? globalThis : window).db = window.db;
+    } catch (_) {
+        // Ignorar si el entorno no permite asignar en globalThis
+    }
 
     console.log('✅ Firestore listo (metadata)');
     console.log('☁️ Archivos se subirán a Cloudinary');

@@ -399,7 +399,17 @@ function removePreview() {
 async function loadUserMedia() {
     try {
         console.log('Cargando medias desde Firebase...');
-        const snapshot = await db.collection('memories').orderBy('timestamp', 'desc').get();
+        // Asegurar que Firestore esté disponible
+        if (!window.db && window.firebase && firebase.apps && firebase.apps.length) {
+            window.db = firebase.firestore();
+        }
+
+        if (!window.db) {
+            console.warn('Firestore no está listo aún. Saltando carga de recuerdos.');
+            return;
+        }
+
+        const snapshot = await window.db.collection('memories').orderBy('timestamp', 'desc').get();
 
         userMedia = [];
         snapshot.forEach(doc => {
@@ -452,7 +462,10 @@ async function uploadToCloudinary(file, type) {
 async function saveMediaToFirebase(media) {
     try {
         console.log('Guardando media en Firebase...');
-        const docRef = await db.collection('memories').add(media);
+        if (!window.db) {
+            throw new Error('Firebase no inicializado (db)');
+        }
+        const docRef = await window.db.collection('memories').add(media);
         console.log('Media guardado con ID:', docRef.id);
         return docRef.id;
     } catch (error) {
@@ -583,7 +596,11 @@ async function editMedia(mediaId) {
     const newCaption = prompt('Nuevo título:', media.caption);
     if (newCaption !== null && newCaption.trim() !== '') {
         try {
-            await db.collection('memories').doc(mediaId).update({
+            if (!window.db) {
+                alert('⚠️ Firestore no está disponible en este momento.');
+                return;
+            }
+            await window.db.collection('memories').doc(mediaId).update({
                 caption: newCaption.trim()
             });
 
@@ -603,7 +620,11 @@ async function editMedia(mediaId) {
 async function deleteMedia(mediaId) {
     if (confirm('¿Estás seguro de que quieres eliminar este recuerdo? 😢')) {
         try {
-            await db.collection('memories').doc(mediaId).delete();
+            if (!window.db) {
+                alert('⚠️ Firestore no está disponible en este momento.');
+                return;
+            }
+            await window.db.collection('memories').doc(mediaId).delete();
 
             // Actualizar localmente
             userMedia = userMedia.filter(m => m.id !== mediaId);
