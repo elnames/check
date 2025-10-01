@@ -918,50 +918,49 @@ document.addEventListener('DOMContentLoaded', function () {
         // Inicializar posición fija desde el principio
         noBtn.style.position = 'fixed';
         noBtn.style.zIndex = '9999';
-        
+
         // Función para mover el botón a una posición aleatoria en toda la página
         function moveNoButton() {
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
-            
+
             // Calcular posiciones aleatorias dentro de la ventana visible
             // Dejar margen de 20px en todos los lados
             const maxX = window.innerWidth - btnWidth - 20;
             const maxY = window.innerHeight - btnHeight - 20;
-            
+
             // Asegurar que no sea negativo
             const minX = 20;
             const minY = 20;
-            
+
             const randomX = Math.random() * (maxX - minX) + minX;
             const randomY = Math.random() * (maxY - minY) + minY;
-            
+
             // Aplicar nueva posición
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
         }
-        
+
         // Posicionar inicialmente
         moveNoButton();
         
-        // Desktop: mouseenter (mejor que mouseover)
+        // Desktop: mouseenter - se escapa solo con acercarse
         noBtn.addEventListener('mouseenter', (e) => {
             e.preventDefault();
             moveNoButton();
         });
         
-        // Móvil: touchstart
-        noBtn.addEventListener('touchstart', (e) => {
+        // Móvil: click/touch - se escapa solo al hacer click
+        noBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             moveNoButton();
         });
         
-        // Click (por si acaso logra clickearlo)
-        noBtn.addEventListener('click', (e) => {
+        // Prevenir el comportamiento por defecto en touch pero sin mover
+        // (solo se moverá con click)
+        noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
-            e.stopPropagation();
-            moveNoButton();
         });
         
         // Reposicionar si cambia el tamaño de la ventana
