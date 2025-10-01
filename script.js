@@ -1,6 +1,7 @@
 // Variables globales
 let currentScreen = 'welcome';
 let currentQuestionIndex = 0;
+let userMedia = []; // Array para almacenar medias del usuario
 
 // Preguntas románticas sobre su historia
 const questions = [
@@ -91,6 +92,8 @@ function showScreen(screenName) {
             loadCurrentQuestion();
         } else if (screenName === 'reveal') {
             createConfetti();
+            // Cargar medias del usuario cuando se muestra la galería
+            renderUserMedia();
         } else if (screenName === 'tickets') {
             createConfetti();
         }
@@ -310,11 +313,139 @@ function closePINModal() {
     }
 }
 
+// Función para cargar medias guardados desde localStorage
+function loadUserMedia() {
+    const savedMedia = localStorage.getItem('userMedia');
+    if (savedMedia) {
+        userMedia = JSON.parse(savedMedia);
+        renderUserMedia();
+    }
+}
+
+// Función para guardar medias en localStorage
+function saveUserMedia() {
+    localStorage.setItem('userMedia', JSON.stringify(userMedia));
+}
+
+// Función para renderizar medias del usuario en la galería
+function renderUserMedia() {
+    const gallery = document.querySelector('.photo-gallery');
+    if (!gallery) return;
+
+    // Eliminar solo los items de usuario previamente agregados
+    const userItems = gallery.querySelectorAll('.gallery-item[data-user-media]');
+    userItems.forEach(item => item.remove());
+
+    // Agregar todos los medias del usuario
+    userMedia.forEach((media, index) => {
+        const galleryItem = document.createElement('div');
+        galleryItem.className = 'gallery-item';
+        galleryItem.setAttribute('data-user-media', 'true');
+        galleryItem.setAttribute('data-media-id', index);
+
+        if (media.type === 'video') {
+            galleryItem.innerHTML = `
+                <video muted autoplay loop playsinline webkit-playsinline preload="metadata">
+                    <source src="${media.url}" type="video/mp4">
+                </video>
+                <div class="photo-overlay">${media.caption}</div>
+            `;
+        } else {
+            galleryItem.innerHTML = `
+                <img src="${media.url}" alt="Momento especial" loading="lazy">
+                <div class="photo-overlay">${media.caption}</div>
+            `;
+        }
+
+        // Click para abrir modal
+        galleryItem.onclick = (e) => {
+            if (!e.target.closest('.media-actions')) {
+                openModal(media.url, media.caption, media.type);
+            }
+        };
+
+        // Long press para editar/eliminar
+        let pressTimer;
+        galleryItem.addEventListener('touchstart', (e) => {
+            pressTimer = setTimeout(() => showMediaActions(index, media), 500);
+        });
+
+        galleryItem.addEventListener('touchend', () => {
+            clearTimeout(pressTimer);
+        });
+
+        galleryItem.addEventListener('mousedown', (e) => {
+            if (e.button === 0) { // Click izquierdo
+                pressTimer = setTimeout(() => showMediaActions(index, media), 500);
+            }
+        });
+
+        galleryItem.addEventListener('mouseup', () => {
+            clearTimeout(pressTimer);
+        });
+
+        galleryItem.addEventListener('mouseleave', () => {
+            clearTimeout(pressTimer);
+        });
+
+        gallery.appendChild(galleryItem);
+    });
+}
+
+// Función para mostrar acciones de media (editar/eliminar)
+function showMediaActions(mediaId, media) {
+    const modal = document.createElement('div');
+    modal.className = 'media-actions-modal';
+    modal.innerHTML = `
+        <div class="media-actions-content">
+            <h3>¿Qué deseas hacer?</h3>
+            <p class="media-caption-preview">"${media.caption}"</p>
+            <button class="btn-action btn-edit" onclick="editMedia(${mediaId})">✏️ Editar Título</button>
+            <button class="btn-action btn-delete" onclick="deleteMedia(${mediaId})">🗑️ Eliminar</button>
+            <button class="btn-action btn-cancel" onclick="closeMediaActions()">Cancelar</button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
+// Función para cerrar el modal de acciones
+function closeMediaActions() {
+    const modal = document.querySelector('.media-actions-modal');
+    if (modal) {
+        modal.classList.remove('active');
+        setTimeout(() => modal.remove(), 300);
+    }
+}
+
+// Función para editar el título de un media
+function editMedia(mediaId) {
+    const newCaption = prompt('Nuevo título:', userMedia[mediaId].caption);
+    if (newCaption !== null && newCaption.trim() !== '') {
+        userMedia[mediaId].caption = newCaption.trim();
+        saveUserMedia();
+        renderUserMedia();
+        closeMediaActions();
+        alert('✅ Título actualizado!');
+    }
+}
+
+// Función para eliminar un media
+function deleteMedia(mediaId) {
+    if (confirm('¿Estás seguro de que quieres eliminar este recuerdo? 😢')) {
+        userMedia.splice(mediaId, 1);
+        saveUserMedia();
+        renderUserMedia();
+        closeMediaActions();
+        alert('🗑️ Recuerdo eliminado');
+    }
+}
+
 // Función para agregar media a la galería
 function addMediaToGallery() {
     const fileInput = document.getElementById('media-upload');
     const captionInput = document.getElementById('media-caption');
-    const gallery = document.querySelector('.photo-gallery');
 
     if (!fileInput.files || fileInput.files.length === 0) {
         alert('Por favor selecciona una imagen o video 📸');
@@ -327,30 +458,20 @@ function addMediaToGallery() {
     const reader = new FileReader();
 
     reader.onload = function (e) {
-        const galleryItem = document.createElement('div');
-        galleryItem.className = 'gallery-item';
-
         const isVideo = file.type.startsWith('video/');
         const mediaURL = e.target.result;
 
-        if (isVideo) {
-            galleryItem.innerHTML = `
-                <video muted autoplay loop playsinline webkit-playsinline preload="metadata">
-                    <source src="${mediaURL}" type="${file.type}">
-                </video>
-                <div class="photo-overlay">${caption}</div>
-            `;
-            galleryItem.onclick = () => openModal(mediaURL, caption, 'video');
-        } else {
-            galleryItem.innerHTML = `
-                <img src="${mediaURL}" alt="Momento especial" loading="lazy">
-                <div class="photo-overlay">${caption}</div>
-            `;
-            galleryItem.onclick = () => openModal(mediaURL, caption, 'image');
-        }
+        // Agregar al array de medias del usuario
+        const newMedia = {
+            url: mediaURL,
+            caption: caption,
+            type: isVideo ? 'video' : 'image',
+            timestamp: Date.now()
+        };
 
-        // Insertar al final de la galería (antes de los videos especiales)
-        gallery.appendChild(galleryItem);
+        userMedia.push(newMedia);
+        saveUserMedia();
+        renderUserMedia();
 
         // Limpiar formulario
         fileInput.value = '';
@@ -393,6 +514,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inicializar elementos
     initializeElements();
+
+    // Cargar medias del usuario desde localStorage
+    loadUserMedia();
 
     // Inicializar botón de omitir
     skipBtn = document.getElementById('skip-btn');
