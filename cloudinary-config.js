@@ -2,8 +2,8 @@
 // Reemplaza 'TU_CLOUD_NAME' con tu Cloud Name de Cloudinary
 
 const CLOUDINARY_CONFIG = {
-    cloudName: 'TU_CLOUD_NAME', // 👈 REEMPLAZA ESTO con tu Cloud Name
-    uploadPreset: 'propuesta_indecente' // Lo crearemos en Cloudinary
+    cloudName: 'dn7fu1lyj', // Tu Cloud Name de Cloudinary
+    uploadPreset: 'propuesta_indecente' // Creado en Cloudinary Settings > Upload
 };
 
 // URL base para subir archivos
