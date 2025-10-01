@@ -208,16 +208,31 @@ function openModal(src, caption, type) {
     if (type === 'video') {
         modalImage.style.display = 'none';
         modalVideo.style.display = 'block';
+        
+        // Limpiar src anterior
+        modalVideo.src = '';
+        modalVideo.load();
+        
+        // Configurar nuevo video
         modalVideo.src = encodeURI(src);
         modalVideo.setAttribute('playsinline', '');
         modalVideo.setAttribute('webkit-playsinline', '');
-        modalVideo.setAttribute('preload', 'metadata');
+        modalVideo.setAttribute('preload', 'auto');
         modalVideo.muted = false;
+        modalVideo.controls = true;
 
+        // Cargar y reproducir
         modalVideo.load();
-        modalVideo.play().catch(error => {
-            console.warn('Video autoplay prevented:', error);
-        });
+        
+        // Intentar reproducir cuando esté listo
+        modalVideo.addEventListener('loadeddata', function playWhenReady() {
+            modalVideo.play().catch(error => {
+                console.warn('Video autoplay prevented:', error);
+                // El usuario tendrá que darle play manualmente
+            });
+            modalVideo.removeEventListener('loadeddata', playWhenReady);
+        }, { once: true });
+        
     } else {
         modalVideo.style.display = 'none';
         modalImage.style.display = 'block';
@@ -495,11 +510,19 @@ function renderUserMedia() {
 
         if (media.type === 'video') {
             galleryItem.innerHTML = `
-                <video muted autoplay loop playsinline webkit-playsinline preload="metadata">
+                <video muted loop playsinline webkit-playsinline preload="metadata">
                     <source src="${media.url}" type="video/mp4">
                 </video>
                 <div class="photo-overlay">${media.caption}</div>
             `;
+            
+            // Intentar autoplay de forma segura
+            const video = galleryItem.querySelector('video');
+            if (video) {
+                video.play().catch(() => {
+                    // Si falla el autoplay, no hacer nada (usuario hará click)
+                });
+            }
         } else {
             galleryItem.innerHTML = `
                 <img src="${media.url}" alt="Momento especial" loading="lazy">
