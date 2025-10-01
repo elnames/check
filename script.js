@@ -8,7 +8,7 @@ const questions = [
     {
         title: "Para continuar, necesito que recuerdes...",
         hint: "¿Cuál fue el primer lugar donde fuimos a comer juntos? 🤔",
-        answers: ['tio tomate', 'tiotomate', 'Tio tomate', 'Tiotomate', 'gabimusic', 'Gabimusic', 'GABIMUSIC']
+        answers: ['tio tomate', 'tiotomate', 'Tio tomate', 'Tiotomate', 'Tíotomate', 'tío tomate', 'Tío Tomate']
     },
     {
         title: "Sigamos recordando momentos especiales...",
@@ -23,7 +23,7 @@ const questions = [
     {
         title: "Pero después tuvimos un momento genial...",
         hint: "¿A qué evento fuimos después y la pasamos súper bien? 🎉",
-        answers: ['superklub', 'Superklub', 'SUPERKLUB', 'super klub', 'Super Klub', 'HSU SuperKlub', 'hsu superklub', 'HSU', 'hsu']
+        answers: ['superklub', 'Superklub', 'SUPERKLUB', 'SuoerKlub', 'super klub', 'Super Klub', 'HSU SuperKlub', 'hsu superklub', 'HSU', 'hsu']
     },
     {
         title: "Última pregunta para llegar a la sorpresa...",
