@@ -526,6 +526,28 @@ body::before {
     line-height: 1.6;
 }
 
+/* Botón "No" que se escapa */
+.btn-no-escape {
+    padding: 18px 35px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    min-height: 60px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    background: linear-gradient(45deg, #a0a0a0, #d0d0d0);
+    color: white;
+    box-shadow: 0 8px 25px rgba(160, 160, 160, 0.3);
+    position: relative;
+    will-change: transform;
+}
+
 .btn-secondary {
     background: rgba(255, 255, 255, 0.2);
     color: white;
@@ -1746,13 +1768,13 @@ body::before {
         font-size: 0.95rem;
         margin: 10px auto;
     }
-    
+
     .romantic-message-box {
         padding: 20px 15px;
         margin: 20px 10px 20px;
         max-width: 95%;
     }
-    
+
     .romantic-text {
         font-size: 1.3rem;
     }

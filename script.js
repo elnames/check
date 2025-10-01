@@ -923,6 +923,48 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Botón "No" que se escapa (broma)
+    const noBtn = document.getElementById('no-btn');
+    if (noBtn) {
+        // Función para mover el botón a una posición aleatoria
+        function moveNoButton() {
+            const container = noBtn.parentElement;
+            const containerRect = container.getBoundingClientRect();
+            const btnRect = noBtn.getBoundingClientRect();
+            
+            // Calcular posiciones aleatorias dentro del contenedor
+            const maxX = window.innerWidth - btnRect.width - 40;
+            const maxY = window.innerHeight - btnRect.height - 40;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            // Aplicar posición absoluta
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+            noBtn.style.zIndex = '9999';
+        }
+        
+        // Desktop: mouseover
+        noBtn.addEventListener('mouseover', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+        
+        // Móvil: touchstart
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+        
+        // Click (por si acaso)
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+    }
+
     // Botón de confirmación (Si)
     const siBtn = document.getElementById('si-btn');
     if (siBtn) {
