@@ -544,7 +544,8 @@ body::before {
     background: linear-gradient(45deg, #a0a0a0, #d0d0d0);
     color: white;
     box-shadow: 0 8px 25px rgba(160, 160, 160, 0.3);
-    position: absolute; /* Absoluto inicialmente para estar alineado */
+    position: absolute;
+    /* Absoluto inicialmente para estar alineado */
     will-change: transform;
     display: none;
     /* Oculto por defecto */
@@ -1490,9 +1491,10 @@ body::before {
     display: flex;
     flex-direction: row;
     gap: 15px;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
+    padding-left: 30px; /* Padding desde el borde izquierdo */
 }
 
 #yes-btn, #si-btn {
