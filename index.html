@@ -83,6 +83,27 @@
                 
                 <!-- Galería de fotos y videos -->
                 <div class="photo-gallery">
+                    <!-- Videos especiales primero -->
+                    <div class="gallery-item" onclick="openModal('img/el_dia_que_nos_conocimos_y_nuestro_primer_beso.mp4', 'El día que nos conocimos y nuestro primer beso 💕', 'video')">
+                        <video muted loop playsinline webkit-playsinline preload="metadata">
+                            <source src="img/el_dia_que_nos_conocimos_y_nuestro_primer_beso.mp4" type="video/mp4">
+                        </video>
+                        <div class="photo-overlay">El día que nos conocimos y nuestro primer beso 💕</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/el_dia_que_volviste.mp4', 'El día que volviste 💕', 'video')">
+                        <video muted loop playsinline webkit-playsinline preload="metadata">
+                            <source src="img/el_dia_que_volviste.mp4" type="video/mp4">
+                        </video>
+                        <div class="photo-overlay">El día que volviste 💕</div>
+                    </div>
+                    <div class="gallery-item" onclick="openModal('img/completo_gabi.mp4', 'Completo gabi 💕', 'video')">
+                        <video muted loop playsinline webkit-playsinline preload="metadata">
+                            <source src="img/completo_gabi.mp4" type="video/mp4">
+                        </video>
+                        <div class="photo-overlay">Completo gabi 💕</div>
+                    </div>
+                    
+                    <!-- Imágenes -->
                     <div class="gallery-item" onclick="openModal('img/foto_espejo_casa.jpg', 'Eres la luz de mis días 💕', 'image')">
                         <img src="img/foto_espejo_casa.jpg" alt="Momento especial juntos" loading="lazy">
                         <div class="photo-overlay">Eres la luz de mis días 💕</div>
@@ -158,12 +179,17 @@
                     </div>
                 </div>
                 
-                <button id="show-tickets-btn" class="btn-primary">Ver Videos Especiales</button>
+                <!-- Mensaje romántico antes del botón -->
+                <div class="romantic-message-box">
+                    <p class="romantic-text">Después de recordar todos estos bellos momentos juntos, tengo algo muy especial que preguntarte... 💕</p>
+                </div>
+                
+                <button id="show-tickets-btn" class="btn-primary">Ver mi sorpresa final</button>
             </div>
         </div>
 
 
-        <!-- Pantalla de videos especiales -->
+        <!-- Pantalla de videos especiales (ELIMINADA - ya no se usa) -->
         <div id="special-videos-screen" class="screen">
             <div class="special-videos-container">
                 <div class="ticket-glow"></div>
@@ -351,6 +377,6 @@
 
     <script src="firebase-config.js"></script>
     <script src="cloudinary-config.js"></script>
-    <script src="script.js?v=28"></script>
+    <script src="script.js?v=29"></script>
 </body>
 </html>

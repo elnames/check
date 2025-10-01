@@ -214,16 +214,16 @@ function openModal(src, caption, type) {
         console.log('📹 Configurando video en modal');
         modalImage.style.display = 'none';
         modalVideo.style.display = 'block';
-        
+
         // Pausar y limpiar video anterior
         modalVideo.pause();
         modalVideo.src = '';
         modalVideo.load();
-        
+
         // Configurar nuevo video
         const videoSrc = src.startsWith('http') ? src : encodeURI(src);
         console.log('🎥 URL del video:', videoSrc);
-        
+
         modalVideo.src = videoSrc;
         modalVideo.setAttribute('playsinline', 'true');
         modalVideo.setAttribute('webkit-playsinline', 'true');
@@ -233,7 +233,7 @@ function openModal(src, caption, type) {
 
         // Cargar video
         modalVideo.load();
-        
+
         // Intentar reproducir cuando esté listo
         const playVideo = () => {
             console.log('▶️ Intentando reproducir video');
@@ -241,7 +241,7 @@ function openModal(src, caption, type) {
                 console.warn('⚠️ Autoplay bloqueado (normal en móviles):', error);
             });
         };
-        
+
         if (modalVideo.readyState >= 3) {
             // Video ya está listo
             playVideo();
@@ -249,7 +249,7 @@ function openModal(src, caption, type) {
             // Esperar a que el video esté listo
             modalVideo.addEventListener('loadeddata', playVideo, { once: true });
         }
-        
+
     } else {
         console.log('🖼️ Configurando imagen en modal');
         modalVideo.style.display = 'none';
@@ -893,13 +893,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Botón para mostrar tickets
+    // Botón para mostrar confirmación (antes iba a videos especiales)
     if (elements.showTicketsBtn) {
         elements.showTicketsBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            console.log('Mostrando videos especiales...');
-            showScreen('specialVideos');
+            console.log('Ir a pantalla de confirmación...');
+            showScreen('confirmation');
         });
     }
 

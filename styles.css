@@ -504,6 +504,28 @@ body::before {
     box-shadow: 0 12px 35px rgba(255, 107, 157, 0.4);
 }
 
+/* Cuadro romántico antes del botón */
+.romantic-message-box {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 25px;
+    margin: 30px auto 25px;
+    max-width: 600px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.romantic-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.6rem;
+    color: #ff6b9d;
+    margin: 0;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    line-height: 1.6;
+}
+
 .btn-secondary {
     background: rgba(255, 255, 255, 0.2);
     color: white;
@@ -1723,6 +1745,16 @@ body::before {
         padding: 16px 25px;
         font-size: 0.95rem;
         margin: 10px auto;
+    }
+    
+    .romantic-message-box {
+        padding: 20px 15px;
+        margin: 20px 10px 20px;
+        max-width: 95%;
+    }
+    
+    .romantic-text {
+        font-size: 1.3rem;
     }
 
     .questions-container {
