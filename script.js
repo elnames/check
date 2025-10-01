@@ -301,7 +301,7 @@ function closePINModal() {
     const pinModal = document.getElementById('pin-modal');
     const pinInput = document.getElementById('pin-input');
     const pinError = document.getElementById('pin-error');
-
+    
     if (pinModal) {
         pinModal.classList.remove('active');
     }
@@ -310,6 +310,30 @@ function closePINModal() {
     }
     if (pinError) {
         pinError.textContent = '';
+    }
+}
+
+// Función para abrir modal de subida de archivos
+function openUploadModal() {
+    const uploadModal = document.getElementById('uploadModal');
+    const fileInput = document.getElementById('media-upload');
+    const captionInput = document.getElementById('media-caption');
+    
+    if (uploadModal) {
+        uploadModal.classList.add('active');
+    }
+    
+    // Limpiar formulario
+    if (fileInput) fileInput.value = '';
+    if (captionInput) captionInput.value = '';
+}
+
+// Función para cerrar modal de subida de archivos
+function closeUploadModal() {
+    const uploadModal = document.getElementById('uploadModal');
+    
+    if (uploadModal) {
+        uploadModal.classList.remove('active');
     }
 }
 
@@ -493,7 +517,7 @@ async function addMediaToGallery() {
     }
 
     const file = fileInput.files[0];
-    const caption = captionInput.value.trim() || 'Un momento especial 💕';
+    const caption = captionInput.value.trim() || 'Un momento especial 💕'; // Si está vacío, usa un texto por defecto
 
     // Mostrar loading
     const addBtn = document.getElementById('add-media-btn');
@@ -518,7 +542,7 @@ async function addMediaToGallery() {
 
             // Guardar en Firebase
             const docId = await saveMediaToFirebase(newMedia);
-
+            
             // Agregar al array local con el ID de Firebase
             newMedia.id = docId;
             userMedia.unshift(newMedia); // Agregar al inicio
@@ -531,6 +555,9 @@ async function addMediaToGallery() {
             // Restaurar botón
             addBtn.innerHTML = originalText;
             addBtn.disabled = false;
+
+            // Cerrar modal
+            closeUploadModal();
 
             // Mensaje de éxito
             alert('¡Recuerdo agregado con éxito! 💕');
@@ -735,6 +762,17 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.addEventListener('click', function (e) {
             if (e.target === modal) {
                 closeModal();
+            }
+        });
+    }
+
+    // Modal de upload listeners
+    const uploadModal = document.getElementById('uploadModal');
+    
+    if (uploadModal) {
+        uploadModal.addEventListener('click', function (e) {
+            if (e.target === uploadModal) {
+                closeUploadModal();
             }
         });
     }

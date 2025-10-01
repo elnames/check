@@ -150,15 +150,12 @@
                         </video>
                         <div class="photo-overlay">Recuerdos que atesoro 💖</div>
                     </div>
-                </div>
-
-                <!-- Sección para agregar nuevas fotos/videos -->
-                <div class="upload-section">
-                    <h3 class="upload-title">¿Quieres agregar un recuerdo especial? 📸</h3>
-                    <div class="upload-form">
-                        <input type="file" id="media-upload" accept="image/*,video/*" class="upload-input">
-                        <input type="text" id="media-caption" placeholder="Escribe un título bonito..." class="upload-caption" maxlength="50">
-                        <button id="add-media-btn" class="btn-upload">Agregar Recuerdo 💕</button>
+                    <!-- Botón para agregar nuevo recuerdo (cuadrado con +) -->
+                    <div class="gallery-item add-memory-btn" onclick="openUploadModal()">
+                        <div class="add-memory-icon">
+                            <span class="plus-icon">+</span>
+                            <p class="add-memory-text">Agregar Recuerdo</p>
+                        </div>
                     </div>
                 </div>
                 
@@ -326,7 +323,26 @@
         <div id="modalCaption" class="modal-caption"></div>
     </div>
 
+    <!-- Modal para subir nuevo recuerdo -->
+    <div id="uploadModal" class="upload-modal">
+        <div class="upload-modal-content">
+            <span class="close-upload" onclick="closeUploadModal()">&times;</span>
+            <h2 class="upload-modal-title">¿Quieres agregar un recuerdo especial? 📸</h2>
+            <div class="upload-modal-form">
+                <div class="file-input-container">
+                    <input type="file" id="media-upload" accept="image/*,video/*" class="upload-input">
+                    <label for="media-upload" class="file-label">
+                        <span class="file-icon">📁</span>
+                        <span class="file-text">Seleccionar archivo</span>
+                    </label>
+                </div>
+                <input type="text" id="media-caption" placeholder="Título (opcional)..." class="upload-caption" maxlength="50">
+                <button id="add-media-btn" class="btn-upload-modal">Agregar Recuerdo 💕</button>
+            </div>
+        </div>
+    </div>
+
     <script src="firebase-config.js"></script>
-    <script src="script.js?v=17"></script>
+    <script src="script.js?v=18"></script>
 </body>
 </html>
