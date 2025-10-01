@@ -961,11 +961,31 @@ document.addEventListener('DOMContentLoaded', function () {
             noBtn.style.top = randomY + 'px';
         }
 
+        // Función para posicionar el botón "No" a la izquierda del botón "Sí"
+        function positionNoButtonNextToYes() {
+            const yesBtn = document.getElementById('yes-btn');
+            if (!yesBtn) return;
+            
+            const yesBtnRect = yesBtn.getBoundingClientRect();
+            const noBtnWidth = noBtn.offsetWidth;
+            
+            // Posicionar a la izquierda del botón "Sí" con un gap de 15px
+            const leftPosition = yesBtnRect.left - noBtnWidth - 15;
+            const topPosition = yesBtnRect.top;
+            
+            noBtn.style.left = leftPosition + 'px';
+            noBtn.style.top = topPosition + 'px';
+            noBtn.style.display = 'block';
+        }
+
         // Función para mostrar el botón cuando estamos en confirmación
         function showNoButtonOnConfirmation() {
             const confirmationScreen = document.getElementById('confirmation-screen');
             if (confirmationScreen && confirmationScreen.classList.contains('active')) {
-                moveNoButton();
+                // Esperar un poco para que el layout se estabilice
+                setTimeout(() => {
+                    positionNoButtonNextToYes();
+                }, 100);
             } else {
                 noBtn.style.display = 'none';
             }
@@ -990,14 +1010,14 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             moveNoButton();
         });
-        
+
         // Móvil: touchstart - se escapa al tocar
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             e.stopPropagation();
             moveNoButton();
         });
-        
+
         // También en click (fallback para móvil y desktop)
         noBtn.addEventListener('click', (e) => {
             e.preventDefault();
