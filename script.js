@@ -148,7 +148,7 @@ function validateAnswer() {
                 if (revealSubtitle) {
                     revealSubtitle.textContent = 'Todos estos momentos son especiales para nosotros...';
                 }
-                
+
                 showScreen('reveal');
             }, 1500);
         }
@@ -323,7 +323,7 @@ function validatePIN() {
     if (pin === '3009') {
         // PIN correcto - ir a galería
         currentQuestionIndex = questions.length;
-        
+
         // Cambiar el título y subtítulo para acceso por PIN
         const revealTitle = document.getElementById('reveal-title');
         const revealSubtitle = document.getElementById('reveal-subtitle');
@@ -333,7 +333,7 @@ function validatePIN() {
         if (revealSubtitle) {
             revealSubtitle.textContent = 'Todos nuestros momentos especiales juntos...';
         }
-        
+
         showScreen('reveal');
         pinModal.classList.remove('active');
         if (skipBtn) {
@@ -990,18 +990,19 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             moveNoButton();
         });
-
-        // Móvil: click/touch - se escapa solo al hacer click
-        noBtn.addEventListener('click', (e) => {
+        
+        // Móvil: touchstart - se escapa al tocar
+        noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
             e.stopPropagation();
             moveNoButton();
         });
-
-        // Prevenir el comportamiento por defecto en touch pero sin mover
-        // (solo se moverá con click)
-        noBtn.addEventListener('touchstart', (e) => {
+        
+        // También en click (fallback para móvil y desktop)
+        noBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
+            moveNoButton();
         });
 
         // Reposicionar si cambia el tamaño de la ventana
