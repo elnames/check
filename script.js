@@ -938,24 +938,27 @@ document.addEventListener('DOMContentLoaded', function () {
     if (noBtn) {
         // Función para mover el botón a una posición aleatoria en toda la página
         function moveNoButton() {
+            // Cambiar a posición fixed para que se mueva por toda la pantalla
+            noBtn.style.position = 'fixed';
+            
             // Hacer visible el botón si no lo está
             noBtn.style.display = 'block';
-
+            
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
-
+            
             // Calcular posiciones aleatorias dentro de la ventana visible
             // Dejar margen de 20px en todos los lados
             const maxX = window.innerWidth - btnWidth - 20;
             const maxY = window.innerHeight - btnHeight - 20;
-
+            
             // Asegurar que no sea negativo
             const minX = 20;
             const minY = 20;
-
+            
             const randomX = Math.random() * (maxX - minX) + minX;
             const randomY = Math.random() * (maxY - minY) + minY;
-
+            
             // Aplicar nueva posición
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
@@ -964,13 +967,18 @@ document.addEventListener('DOMContentLoaded', function () {
         // Función para posicionar el botón "No" a la derecha del botón "Sí"
         function positionNoButtonNextToYes() {
             const yesBtn = document.getElementById('yes-btn');
-            if (!yesBtn) return;
+            const confirmationScreen = document.getElementById('confirmation-screen');
+            if (!yesBtn || !confirmationScreen) return;
+            
+            // Resetear a posición absoluta para alinearlo
+            noBtn.style.position = 'absolute';
             
             const yesBtnRect = yesBtn.getBoundingClientRect();
+            const screenRect = confirmationScreen.getBoundingClientRect();
             
-            // Posicionar a la derecha del botón "Sí" con un gap de 15px
-            const leftPosition = yesBtnRect.right + 15;
-            const topPosition = yesBtnRect.top;
+            // Calcular posición relativa al contenedor de confirmación
+            const leftPosition = yesBtnRect.right - screenRect.left + 15;
+            const topPosition = yesBtnRect.top - screenRect.top;
             
             noBtn.style.left = leftPosition + 'px';
             noBtn.style.top = topPosition + 'px';
