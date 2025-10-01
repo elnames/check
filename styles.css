@@ -528,33 +528,28 @@ body::before {
 
 /* Botón "No" que se escapa */
 .btn-no-escape {
-    padding: 20px 40px;
+    padding: 15px 30px;
     border: none;
     border-radius: 50px;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
-    min-height: 60px;
+    min-height: 50px;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
     background: linear-gradient(45deg, #a0a0a0, #d0d0d0);
     color: white;
     box-shadow: 0 8px 25px rgba(160, 160, 160, 0.3);
-    position: relative; /* Relativo inicialmente para estar en el flujo */
+    position: fixed; /* SIEMPRE fixed para estar fuera */
     will-change: transform;
     display: none;
     /* Oculto por defecto */
     z-index: 9999;
-    margin: 0; /* Sin margen adicional */
-}
-
-/* Cuando está activo y se ha escapado */
-.btn-no-escape.escaped {
-    position: fixed;
+    margin: 0;
 }
 
 .btn-secondary {

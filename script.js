@@ -938,10 +938,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (noBtn) {
         // Función para mover el botón a una posición aleatoria en toda la página
         function moveNoButton() {
-            // Cambiar a posición fixed para que se mueva por toda la pantalla
-            noBtn.classList.add('escaped');
-            noBtn.style.position = 'fixed';
-            
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
             
@@ -962,16 +958,30 @@ document.addEventListener('DOMContentLoaded', function () {
             noBtn.style.top = randomY + 'px';
         }
 
+        // Función para posicionar el botón "No" a la derecha del botón "Sí"
+        function positionNoButtonNextToYes() {
+            const yesBtn = document.getElementById('yes-btn');
+            if (!yesBtn) return;
+            
+            const yesBtnRect = yesBtn.getBoundingClientRect();
+            
+            // Posicionar a la derecha del botón "Sí" con un gap de 15px
+            const leftPosition = yesBtnRect.right + 15;
+            const topPosition = yesBtnRect.top;
+            
+            noBtn.style.left = leftPosition + 'px';
+            noBtn.style.top = topPosition + 'px';
+            noBtn.style.display = 'block';
+        }
+
         // Función para mostrar el botón cuando estamos en confirmación
         function showNoButtonOnConfirmation() {
             const confirmationScreen = document.getElementById('confirmation-screen');
             if (confirmationScreen && confirmationScreen.classList.contains('active')) {
-                // Resetear a posición relativa dentro del contenedor
-                noBtn.classList.remove('escaped');
-                noBtn.style.position = 'relative';
-                noBtn.style.left = '';
-                noBtn.style.top = '';
-                noBtn.style.display = 'block';
+                // Esperar un poco para que el layout se estabilice
+                setTimeout(() => {
+                    positionNoButtonNextToYes();
+                }, 100);
             } else {
                 noBtn.style.display = 'none';
             }
@@ -1013,12 +1023,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Reposicionar si cambia el tamaño de la ventana
         window.addEventListener('resize', () => {
-            // Si está escapado, mantenerlo en pantalla
-            if (noBtn.classList.contains('escaped')) {
-                moveNoButton();
-            } else {
-                showNoButtonOnConfirmation();
-            }
+            showNoButtonOnConfirmation();
         });
     }
 
