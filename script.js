@@ -409,7 +409,7 @@ async function loadUserMedia() {
             return;
         }
 
-        const snapshot = await window.db.collection('memories').orderBy('timestamp', 'desc').get();
+        const snapshot = await window.db.collection('memories').orderBy('timestamp', 'asc').get();
 
         userMedia = [];
         snapshot.forEach(doc => {
@@ -738,7 +738,7 @@ async function addMediaToGallery() {
 
         // Agregar al array local con el ID de Firebase
         newMedia.id = docId;
-        userMedia.unshift(newMedia);
+        userMedia.push(newMedia);
         renderUserMedia();
 
         // Limpiar formulario
