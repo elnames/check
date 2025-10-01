@@ -139,6 +139,16 @@ function validateAnswer() {
         } else {
             // Todas las preguntas respondidas
             setTimeout(() => {
+                // Asegurar que el título sea el correcto (para acceso normal)
+                const revealTitle = document.getElementById('reveal-title');
+                const revealSubtitle = document.getElementById('reveal-subtitle');
+                if (revealTitle) {
+                    revealTitle.textContent = '¡Correcto! 🎉';
+                }
+                if (revealSubtitle) {
+                    revealSubtitle.textContent = 'Todos estos momentos son especiales para nosotros...';
+                }
+                
                 showScreen('reveal');
             }, 1500);
         }
@@ -313,6 +323,17 @@ function validatePIN() {
     if (pin === '3009') {
         // PIN correcto - ir a galería
         currentQuestionIndex = questions.length;
+        
+        // Cambiar el título y subtítulo para acceso por PIN
+        const revealTitle = document.getElementById('reveal-title');
+        const revealSubtitle = document.getElementById('reveal-subtitle');
+        if (revealTitle) {
+            revealTitle.textContent = 'Nuestra galería 💕';
+        }
+        if (revealSubtitle) {
+            revealSubtitle.textContent = 'Todos nuestros momentos especiales juntos...';
+        }
+        
         showScreen('reveal');
         pinModal.classList.remove('active');
         if (skipBtn) {
@@ -919,22 +940,22 @@ document.addEventListener('DOMContentLoaded', function () {
         function moveNoButton() {
             // Hacer visible el botón si no lo está
             noBtn.style.display = 'block';
-            
+
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
-            
+
             // Calcular posiciones aleatorias dentro de la ventana visible
             // Dejar margen de 20px en todos los lados
             const maxX = window.innerWidth - btnWidth - 20;
             const maxY = window.innerHeight - btnHeight - 20;
-            
+
             // Asegurar que no sea negativo
             const minX = 20;
             const minY = 20;
-            
+
             const randomX = Math.random() * (maxX - minX) + minX;
             const randomY = Math.random() * (maxY - minY) + minY;
-            
+
             // Aplicar nueva posición
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
@@ -963,26 +984,26 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.screen').forEach(screen => {
             observer.observe(screen, { attributes: true });
         });
-        
+
         // Desktop: mouseenter - se escapa solo con acercarse
         noBtn.addEventListener('mouseenter', (e) => {
             e.preventDefault();
             moveNoButton();
         });
-        
+
         // Móvil: click/touch - se escapa solo al hacer click
         noBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             moveNoButton();
         });
-        
+
         // Prevenir el comportamiento por defecto en touch pero sin mover
         // (solo se moverá con click)
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
         });
-        
+
         // Reposicionar si cambia el tamaño de la ventana
         window.addEventListener('resize', () => {
             showNoButtonOnConfirmation();

@@ -546,12 +546,13 @@ body::before {
     box-shadow: 0 8px 25px rgba(160, 160, 160, 0.3);
     position: fixed;
     will-change: transform;
-    display: none; /* Oculto por defecto */
+    display: none;
+    /* Oculto por defecto */
     z-index: 9999;
 }
 
 /* Mostrar solo en pantalla de confirmación */
-#confirmation-screen.active ~ #no-btn {
+#confirmation-screen.active~#no-btn {
     display: block;
 }
 
