@@ -915,34 +915,54 @@ document.addEventListener('DOMContentLoaded', function () {
     // Botón "No" que se escapa (broma)
     const noBtn = document.getElementById('no-btn');
     if (noBtn) {
-        // Inicializar posición fija desde el principio
-        noBtn.style.position = 'fixed';
-        noBtn.style.zIndex = '9999';
-
         // Función para mover el botón a una posición aleatoria en toda la página
         function moveNoButton() {
+            // Hacer visible el botón si no lo está
+            noBtn.style.display = 'block';
+            
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
-
+            
             // Calcular posiciones aleatorias dentro de la ventana visible
             // Dejar margen de 20px en todos los lados
             const maxX = window.innerWidth - btnWidth - 20;
             const maxY = window.innerHeight - btnHeight - 20;
-
+            
             // Asegurar que no sea negativo
             const minX = 20;
             const minY = 20;
-
+            
             const randomX = Math.random() * (maxX - minX) + minX;
             const randomY = Math.random() * (maxY - minY) + minY;
-
+            
             // Aplicar nueva posición
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
         }
 
-        // Posicionar inicialmente
-        moveNoButton();
+        // Función para mostrar el botón cuando estamos en confirmación
+        function showNoButtonOnConfirmation() {
+            const confirmationScreen = document.getElementById('confirmation-screen');
+            if (confirmationScreen && confirmationScreen.classList.contains('active')) {
+                moveNoButton();
+            } else {
+                noBtn.style.display = 'none';
+            }
+        }
+
+        // Observar cambios en las pantallas
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'class') {
+                    showNoButtonOnConfirmation();
+                }
+            });
+        });
+
+        // Observar todas las pantallas
+        document.querySelectorAll('.screen').forEach(screen => {
+            observer.observe(screen, { attributes: true });
+        });
         
         // Desktop: mouseenter - se escapa solo con acercarse
         noBtn.addEventListener('mouseenter', (e) => {
@@ -965,7 +985,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Reposicionar si cambia el tamaño de la ventana
         window.addEventListener('resize', () => {
-            moveNoButton();
+            showNoButtonOnConfirmation();
         });
     }
 
