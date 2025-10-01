@@ -279,9 +279,17 @@ function validatePIN() {
     const pin = pinInput.value.trim();
 
     if (pin === '3009') {
-        // PIN correcto
+        // PIN correcto - ir a galería
         currentQuestionIndex = questions.length;
         showScreen('reveal');
+        pinModal.classList.remove('active');
+        if (skipBtn) {
+            skipBtn.classList.add('hidden');
+        }
+    } else if (pin === '4224') {
+        // PIN especial - ir directo a las entradas
+        currentQuestionIndex = questions.length;
+        showScreen('tickets');
         pinModal.classList.remove('active');
         if (skipBtn) {
             skipBtn.classList.add('hidden');
@@ -489,7 +497,7 @@ function renderUserMedia() {
         // Long press para editar/eliminar (solo en móvil)
         let pressTimer;
         let isLongPress = false;
-        
+
         galleryItem.addEventListener('touchstart', (e) => {
             isLongPress = false;
             pressTimer = setTimeout(() => {
@@ -505,7 +513,7 @@ function renderUserMedia() {
                 openModal(media.url, media.caption, media.type);
             }
         });
-        
+
         galleryItem.addEventListener('touchmove', () => {
             clearTimeout(pressTimer);
         });
