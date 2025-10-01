@@ -915,41 +915,57 @@ document.addEventListener('DOMContentLoaded', function () {
     // Botón "No" que se escapa (broma)
     const noBtn = document.getElementById('no-btn');
     if (noBtn) {
-        // Función para mover el botón a una posición aleatoria
+        // Inicializar posición fija desde el principio
+        noBtn.style.position = 'fixed';
+        noBtn.style.zIndex = '9999';
+        
+        // Función para mover el botón a una posición aleatoria en toda la página
         function moveNoButton() {
-            const container = noBtn.parentElement;
-            const containerRect = container.getBoundingClientRect();
-            const btnRect = noBtn.getBoundingClientRect();
-
-            // Calcular posiciones aleatorias dentro del contenedor
-            const maxX = window.innerWidth - btnRect.width - 40;
-            const maxY = window.innerHeight - btnRect.height - 40;
-
-            const randomX = Math.random() * maxX;
-            const randomY = Math.random() * maxY;
-
-            // Aplicar posición absoluta
-            noBtn.style.position = 'fixed';
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+            
+            // Calcular posiciones aleatorias dentro de la ventana visible
+            // Dejar margen de 20px en todos los lados
+            const maxX = window.innerWidth - btnWidth - 20;
+            const maxY = window.innerHeight - btnHeight - 20;
+            
+            // Asegurar que no sea negativo
+            const minX = 20;
+            const minY = 20;
+            
+            const randomX = Math.random() * (maxX - minX) + minX;
+            const randomY = Math.random() * (maxY - minY) + minY;
+            
+            // Aplicar nueva posición
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
-            noBtn.style.zIndex = '9999';
         }
-
-        // Desktop: mouseover
-        noBtn.addEventListener('mouseover', (e) => {
+        
+        // Posicionar inicialmente
+        moveNoButton();
+        
+        // Desktop: mouseenter (mejor que mouseover)
+        noBtn.addEventListener('mouseenter', (e) => {
             e.preventDefault();
             moveNoButton();
         });
-
+        
         // Móvil: touchstart
         noBtn.addEventListener('touchstart', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             moveNoButton();
         });
-
-        // Click (por si acaso)
+        
+        // Click (por si acaso logra clickearlo)
         noBtn.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();
+            moveNoButton();
+        });
+        
+        // Reposicionar si cambia el tamaño de la ventana
+        window.addEventListener('resize', () => {
             moveNoButton();
         });
     }
