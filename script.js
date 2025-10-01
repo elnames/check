@@ -200,46 +200,64 @@ function openModal(src, caption, type) {
     const modalVideo = document.getElementById('modalVideo');
     const modalCaption = document.getElementById('modalCaption');
 
-    console.log('Abriendo modal:', { src, caption, type });
+    console.log('🎬 Abriendo modal:', { src, caption, type });
+
+    if (!modal || !modalImage || !modalVideo || !modalCaption) {
+        console.error('❌ Elementos del modal no encontrados');
+        return;
+    }
 
     modal.style.display = 'block';
     modalCaption.textContent = caption;
 
     if (type === 'video') {
+        console.log('📹 Configurando video en modal');
         modalImage.style.display = 'none';
         modalVideo.style.display = 'block';
         
-        // Limpiar src anterior
+        // Pausar y limpiar video anterior
+        modalVideo.pause();
         modalVideo.src = '';
         modalVideo.load();
         
         // Configurar nuevo video
-        modalVideo.src = encodeURI(src);
-        modalVideo.setAttribute('playsinline', '');
-        modalVideo.setAttribute('webkit-playsinline', '');
+        const videoSrc = src.startsWith('http') ? src : encodeURI(src);
+        console.log('🎥 URL del video:', videoSrc);
+        
+        modalVideo.src = videoSrc;
+        modalVideo.setAttribute('playsinline', 'true');
+        modalVideo.setAttribute('webkit-playsinline', 'true');
         modalVideo.setAttribute('preload', 'auto');
         modalVideo.muted = false;
         modalVideo.controls = true;
 
-        // Cargar y reproducir
+        // Cargar video
         modalVideo.load();
         
         // Intentar reproducir cuando esté listo
-        modalVideo.addEventListener('loadeddata', function playWhenReady() {
+        const playVideo = () => {
+            console.log('▶️ Intentando reproducir video');
             modalVideo.play().catch(error => {
-                console.warn('Video autoplay prevented:', error);
-                // El usuario tendrá que darle play manualmente
+                console.warn('⚠️ Autoplay bloqueado (normal en móviles):', error);
             });
-            modalVideo.removeEventListener('loadeddata', playWhenReady);
-        }, { once: true });
+        };
+        
+        if (modalVideo.readyState >= 3) {
+            // Video ya está listo
+            playVideo();
+        } else {
+            // Esperar a que el video esté listo
+            modalVideo.addEventListener('loadeddata', playVideo, { once: true });
+        }
         
     } else {
+        console.log('🖼️ Configurando imagen en modal');
         modalVideo.style.display = 'none';
         modalImage.style.display = 'block';
         modalImage.src = src;
     }
 
-    console.log('Caption establecida:', modalCaption.textContent);
+    console.log('✅ Modal abierto correctamente');
 }
 
 // Función para cerrar modal
@@ -515,7 +533,7 @@ function renderUserMedia() {
                 </video>
                 <div class="photo-overlay">${media.caption}</div>
             `;
-            
+
             // Intentar autoplay de forma segura
             const video = galleryItem.querySelector('video');
             if (video) {
@@ -546,6 +564,9 @@ function renderUserMedia() {
             clearTimeout(pressTimer);
             // Si no fue long press, abrir modal
             if (!isLongPress && !e.target.closest('.media-actions')) {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Touch end - abriendo modal:', media.caption, media.type);
                 openModal(media.url, media.caption, media.type);
             }
         });
@@ -554,9 +575,11 @@ function renderUserMedia() {
             clearTimeout(pressTimer);
         });
 
-        // Click normal para desktop
+        // Click normal para desktop y fallback móvil
         galleryItem.addEventListener('click', (e) => {
             if (!e.target.closest('.media-actions')) {
+                e.preventDefault();
+                console.log('Click - abriendo modal:', media.caption, media.type);
                 openModal(media.url, media.caption, media.type);
             }
         });
