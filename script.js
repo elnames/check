@@ -335,7 +335,7 @@ function closeUploadModal() {
     if (uploadModal) {
         uploadModal.classList.remove('active');
     }
-    
+
     // Limpiar previsualización
     removePreview();
 }
@@ -345,12 +345,12 @@ function showPreview(file) {
     const previewContainer = document.getElementById('preview-container');
     const previewImage = document.getElementById('preview-image');
     const previewVideo = document.getElementById('preview-video');
-    
+
     if (!file) return;
-    
+
     const isVideo = file.type.startsWith('video/');
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
         if (isVideo) {
             previewVideo.src = e.target.result;
@@ -361,10 +361,10 @@ function showPreview(file) {
             previewImage.style.display = 'block';
             previewVideo.style.display = 'none';
         }
-        
+
         previewContainer.style.display = 'block';
     };
-    
+
     reader.readAsDataURL(file);
 }
 
@@ -374,7 +374,7 @@ function removePreview() {
     const previewImage = document.getElementById('preview-image');
     const previewVideo = document.getElementById('preview-video');
     const fileInput = document.getElementById('media-upload');
-    
+
     if (previewContainer) previewContainer.style.display = 'none';
     if (previewImage) {
         previewImage.src = '';
@@ -486,22 +486,35 @@ function renderUserMedia() {
             `;
         }
 
-        // Click para abrir modal
-        galleryItem.onclick = (e) => {
+        // Long press para editar/eliminar (solo en móvil)
+        let pressTimer;
+        let isLongPress = false;
+        
+        galleryItem.addEventListener('touchstart', (e) => {
+            isLongPress = false;
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                showMediaActions(media.id, media);
+            }, 500);
+        });
+
+        galleryItem.addEventListener('touchend', (e) => {
+            clearTimeout(pressTimer);
+            // Si no fue long press, abrir modal
+            if (!isLongPress && !e.target.closest('.media-actions')) {
+                openModal(media.url, media.caption, media.type);
+            }
+        });
+        
+        galleryItem.addEventListener('touchmove', () => {
+            clearTimeout(pressTimer);
+        });
+
+        // Click normal para desktop
+        galleryItem.addEventListener('click', (e) => {
             if (!e.target.closest('.media-actions')) {
                 openModal(media.url, media.caption, media.type);
             }
-        };
-
-        // Long press para editar/eliminar
-        let pressTimer;
-        galleryItem.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // Prevenir selección de texto
-            pressTimer = setTimeout(() => showMediaActions(media.id, media), 500);
-        });
-
-        galleryItem.addEventListener('touchend', () => {
-            clearTimeout(pressTimer);
         });
 
         galleryItem.addEventListener('mousedown', (e) => {
@@ -895,11 +908,11 @@ document.addEventListener('DOMContentLoaded', function () {
     if (addMediaBtn) {
         addMediaBtn.addEventListener('click', addMediaToGallery);
     }
-    
+
     // Event listener para previsualización al seleccionar archivo
     const mediaUploadInput = document.getElementById('media-upload');
     if (mediaUploadInput) {
-        mediaUploadInput.addEventListener('change', function(e) {
+        mediaUploadInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file) {
                 showPreview(file);
