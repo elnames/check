@@ -528,10 +528,10 @@ body::before {
 
 /* Botón "No" que se escapa */
 .btn-no-escape {
-    padding: 18px 35px;
+    padding: 20px 40px;
     border: none;
     border-radius: 50px;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -544,12 +544,17 @@ body::before {
     background: linear-gradient(45deg, #a0a0a0, #d0d0d0);
     color: white;
     box-shadow: 0 8px 25px rgba(160, 160, 160, 0.3);
-    position: absolute;
-    /* Absoluto inicialmente para estar alineado */
+    position: relative; /* Relativo inicialmente para estar en el flujo */
     will-change: transform;
     display: none;
     /* Oculto por defecto */
     z-index: 9999;
+    margin: 0; /* Sin margen adicional */
+}
+
+/* Cuando está activo y se ha escapado */
+.btn-no-escape.escaped {
+    position: fixed;
 }
 
 .btn-secondary {
@@ -1494,7 +1499,10 @@ body::before {
     justify-content: flex-start;
     align-items: center;
     flex-wrap: wrap;
-    padding-left: 30px; /* Padding desde el borde izquierdo */
+    padding-left: 30px;
+    /* Padding desde el borde izquierdo */
+    position: relative;
+    /* Para que el botón "No" se posicione relativo a este contenedor */
 }
 
 #yes-btn, #si-btn {

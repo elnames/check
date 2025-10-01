@@ -939,60 +939,39 @@ document.addEventListener('DOMContentLoaded', function () {
         // Función para mover el botón a una posición aleatoria en toda la página
         function moveNoButton() {
             // Cambiar a posición fixed para que se mueva por toda la pantalla
+            noBtn.classList.add('escaped');
             noBtn.style.position = 'fixed';
-
-            // Hacer visible el botón si no lo está
-            noBtn.style.display = 'block';
-
+            
             const btnWidth = noBtn.offsetWidth;
             const btnHeight = noBtn.offsetHeight;
-
+            
             // Calcular posiciones aleatorias dentro de la ventana visible
             // Dejar margen de 20px en todos los lados
             const maxX = window.innerWidth - btnWidth - 20;
             const maxY = window.innerHeight - btnHeight - 20;
-
+            
             // Asegurar que no sea negativo
             const minX = 20;
             const minY = 20;
-
+            
             const randomX = Math.random() * (maxX - minX) + minX;
             const randomY = Math.random() * (maxY - minY) + minY;
-
+            
             // Aplicar nueva posición
             noBtn.style.left = randomX + 'px';
             noBtn.style.top = randomY + 'px';
-        }
-
-        // Función para posicionar el botón "No" a la derecha del botón "Sí"
-        function positionNoButtonNextToYes() {
-            const yesBtn = document.getElementById('yes-btn');
-            const confirmationScreen = document.getElementById('confirmation-screen');
-            if (!yesBtn || !confirmationScreen) return;
-
-            // Resetear a posición absoluta para alinearlo
-            noBtn.style.position = 'absolute';
-
-            const yesBtnRect = yesBtn.getBoundingClientRect();
-            const screenRect = confirmationScreen.getBoundingClientRect();
-
-            // Calcular posición relativa al contenedor de confirmación
-            const leftPosition = yesBtnRect.right - screenRect.left + 15;
-            const topPosition = yesBtnRect.top - screenRect.top;
-
-            noBtn.style.left = leftPosition + 'px';
-            noBtn.style.top = topPosition + 'px';
-            noBtn.style.display = 'block';
         }
 
         // Función para mostrar el botón cuando estamos en confirmación
         function showNoButtonOnConfirmation() {
             const confirmationScreen = document.getElementById('confirmation-screen');
             if (confirmationScreen && confirmationScreen.classList.contains('active')) {
-                // Esperar un poco para que el layout se estabilice
-                setTimeout(() => {
-                    positionNoButtonNextToYes();
-                }, 100);
+                // Resetear a posición relativa dentro del contenedor
+                noBtn.classList.remove('escaped');
+                noBtn.style.position = 'relative';
+                noBtn.style.left = '';
+                noBtn.style.top = '';
+                noBtn.style.display = 'block';
             } else {
                 noBtn.style.display = 'none';
             }
@@ -1034,7 +1013,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Reposicionar si cambia el tamaño de la ventana
         window.addEventListener('resize', () => {
-            showNoButtonOnConfirmation();
+            // Si está escapado, mantenerlo en pantalla
+            if (noBtn.classList.contains('escaped')) {
+                moveNoButton();
+            } else {
+                showNoButtonOnConfirmation();
+            }
         });
     }
 
