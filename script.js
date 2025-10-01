@@ -961,16 +961,15 @@ document.addEventListener('DOMContentLoaded', function () {
             noBtn.style.top = randomY + 'px';
         }
 
-        // Función para posicionar el botón "No" a la izquierda del botón "Sí"
+        // Función para posicionar el botón "No" a la derecha del botón "Sí"
         function positionNoButtonNextToYes() {
             const yesBtn = document.getElementById('yes-btn');
             if (!yesBtn) return;
             
             const yesBtnRect = yesBtn.getBoundingClientRect();
-            const noBtnWidth = noBtn.offsetWidth;
             
-            // Posicionar a la izquierda del botón "Sí" con un gap de 15px
-            const leftPosition = yesBtnRect.left - noBtnWidth - 15;
+            // Posicionar a la derecha del botón "Sí" con un gap de 15px
+            const leftPosition = yesBtnRect.right + 15;
             const topPosition = yesBtnRect.top;
             
             noBtn.style.left = leftPosition + 'px';
