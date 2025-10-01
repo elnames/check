@@ -8,6 +8,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Botón de omitir con PIN -->
+    <button id="skip-btn" class="skip-btn">Omitir</button>
+
+    <!-- Modal de PIN -->
+    <div id="pin-modal" class="pin-modal">
+        <div class="pin-modal-content">
+            <h2 class="pin-title">Ingresa el PIN</h2>
+            <p class="pin-subtitle">Para saltar a las fotos</p>
+            <input type="password" id="pin-input" class="pin-input" maxlength="4" placeholder="****" inputmode="numeric">
+            <div id="pin-error" class="pin-error"></div>
+            <div class="pin-buttons">
+                <button id="pin-submit" class="btn-pin-primary">Confirmar</button>
+                <button id="pin-cancel" class="btn-pin-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <!-- Pantalla de bienvenida -->
         <div id="welcome-screen" class="screen active">
@@ -129,6 +146,16 @@
                         <div class="photo-overlay">Recuerdos que atesoro 💖</div>
                     </div>
                 </div>
+
+                <!-- Sección para agregar nuevas fotos/videos -->
+                <div class="upload-section">
+                    <h3 class="upload-title">¿Quieres agregar un recuerdo especial? 📸</h3>
+                    <div class="upload-form">
+                        <input type="file" id="media-upload" accept="image/*,video/*" class="upload-input">
+                        <input type="text" id="media-caption" placeholder="Escribe un título bonito..." class="upload-caption" maxlength="50">
+                        <button id="add-media-btn" class="btn-upload">Agregar Recuerdo 💕</button>
+                    </div>
+                </div>
                 
                 <button id="show-tickets-btn" class="btn-primary">Ver Videos Especiales</button>
             </div>
@@ -168,6 +195,7 @@
                 </div>
 
                 <button id="show-confirmation-btn" class="btn-primary">Ver mi Sorpresa Final</button>
+                <button id="back-from-special-videos-btn" class="btn-secondary" style="margin-top: 15px;">Volver</button>
             </div>
         </div>
 
@@ -180,10 +208,12 @@
                     <div class="heart"></div>
                 </div>
                 
-                <h2 class="confirmation-title">¿Respondiste a la pregunta que te hice? 💕</h2>
+                <h2 class="confirmation-title">¿Qué respondiste? 💕</h2>
                 
                 <div class="confirmation-buttons">
                     <button id="yes-btn" class="btn-primary">¡SÍ! 💕</button>
+                    <button id="si-btn" class="btn-primary" style="margin-top: 15px;">Si 💕</button>
+                    <button id="back-from-confirmation-btn" class="btn-secondary" style="margin-top: 15px;">Volver</button>
                 </div>
             </div>
         </div>
@@ -215,8 +245,8 @@
                                 <p><strong>Incluye:</strong> Una noche inolvidable juntos</p>
                             </div>
                             <div class="ticket-actions">
-                                <button class="download-btn" onclick="downloadPDF('img/ticket-49757310.pdf')">
-                                    📄 Descargar PDF de HSU
+                                <button class="download-btn" onclick="downloadPDF('docs/ETICKET Superklub.pdf')">
+                                    📄 Descargar PDF de Superklub
                                 </button>
                             </div>
                         </div>
@@ -244,6 +274,11 @@
                                 <p><strong>Fecha:</strong> 11 de octubre 2025</p>
                                 <p><strong>Incluye:</strong> Una experiencia épica</p>
                             </div>
+                            <div class="ticket-actions">
+                                <button class="download-btn" onclick="downloadPDF('docs/ETICKET creamfields.pdf')">
+                                    📄 Descargar PDF de Creamfields
+                                </button>
+                            </div>
                             <div class="ticket-footer">
                                 <p class="romantic-message">
                                     "Quiero que disfrutes de la mejor música, porque te mereces lo mejor" 🎶💕
@@ -251,8 +286,8 @@
                             </div>
                         </div>
                         <div class="ticket-qr">
-                            <div class="qr-container" onclick="showQR('img/Creamfields.png', 'QR Creamfields - Disponible desde el 1 de octubre')">
-                                <img src="img/Creamfields.png" alt="QR Creamfields" class="qr-image">
+                            <div class="qr-container" onclick="showQR('img/QR Creamfields.png', 'QR Creamfields')">
+                                <img src="img/QR Creamfields.png" alt="QR Creamfields" class="qr-image">
                                 <div class="qr-overlay">
                                     <span class="qr-text">🔍 Toca para ver</span>
                                 </div>
@@ -263,6 +298,7 @@
                 
 
                 <button id="restart-btn" class="btn-secondary">Volver a empezar</button>
+                <button id="back-from-tickets-btn" class="btn-secondary" style="margin-top: 15px;">Volver</button>
             </div>
         </div>
     </div>
@@ -277,6 +313,6 @@
         <div id="modalCaption" class="modal-caption"></div>
     </div>
 
-    <script src="script.js?v=7"></script>
+    <script src="script.js?v=11"></script>
 </body>
 </html>

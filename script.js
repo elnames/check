@@ -34,6 +34,7 @@ const questions = [
 // Variables para elementos del DOM
 let screens = {};
 let elements = {};
+let skipBtn = null;
 
 // Función para inicializar elementos del DOM
 function initializeElements() {
@@ -61,7 +62,7 @@ function initializeElements() {
         progressText: document.getElementById('progress-text'),
         progressFill: document.getElementById('progress-fill')
     };
-    
+
     console.log('Elementos inicializados:', elements);
 }
 
@@ -82,6 +83,9 @@ function showScreen(screenName) {
         currentScreen = screenName;
         console.log('Pantalla mostrada:', screenName);
 
+        // Actualizar visibilidad del botón de omitir
+        updateSkipButtonVisibility();
+
         // Efectos especiales según la pantalla
         if (screenName === 'questions') {
             loadCurrentQuestion();
@@ -99,12 +103,12 @@ function showScreen(screenName) {
 function loadCurrentQuestion() {
     if (currentQuestionIndex < questions.length) {
         const question = questions[currentQuestionIndex];
-        
+
         if (elements.questionTitle) elements.questionTitle.textContent = question.title;
         if (elements.questionHint) elements.questionHint.textContent = question.hint;
         if (elements.progressText) elements.progressText.textContent = `Pregunta ${currentQuestionIndex + 1} de ${questions.length}`;
         if (elements.progressFill) elements.progressFill.style.width = `${((currentQuestionIndex + 1) / questions.length) * 100}%`;
-        
+
         // Limpiar mensajes anteriores
         if (elements.questionErrorMessage) elements.questionErrorMessage.textContent = '';
         if (elements.questionSuccessMessage) elements.questionSuccessMessage.textContent = '';
@@ -116,15 +120,15 @@ function loadCurrentQuestion() {
 function validateAnswer() {
     const userAnswer = elements.questionInput.value.trim().toLowerCase();
     const currentQuestion = questions[currentQuestionIndex];
-    
+
     if (currentQuestion.answers.includes(userAnswer)) {
         // Respuesta correcta
         if (elements.questionSuccessMessage) {
             elements.questionSuccessMessage.textContent = '¡Correcto! 💕';
         }
-        
+
         currentQuestionIndex++;
-        
+
         if (currentQuestionIndex < questions.length) {
             // Siguiente pregunta
             setTimeout(() => {
@@ -141,7 +145,7 @@ function validateAnswer() {
         if (elements.questionErrorMessage) {
             elements.questionErrorMessage.textContent = 'Inténtalo de nuevo... 💔';
         }
-        
+
         // Limpiar mensaje de error después de 2 segundos
         setTimeout(() => {
             if (elements.questionErrorMessage) {
@@ -161,9 +165,9 @@ function createConfetti() {
     confettiContainer.style.height = '100%';
     confettiContainer.style.pointerEvents = 'none';
     confettiContainer.style.zIndex = '9999';
-    
+
     document.body.appendChild(confettiContainer);
-    
+
     for (let i = 0; i < 50; i++) {
         const confetti = document.createElement('div');
         confetti.style.position = 'absolute';
@@ -174,10 +178,10 @@ function createConfetti() {
         confetti.style.top = '-10px';
         confetti.style.borderRadius = '50%';
         confetti.style.animation = `fall ${2 + Math.random() * 3}s linear forwards`;
-        
+
         confettiContainer.appendChild(confetti);
     }
-    
+
     // Remover confeti después de la animación
     setTimeout(() => {
         if (confettiContainer.parentNode) {
@@ -206,7 +210,7 @@ function openModal(src, caption, type) {
         modalVideo.setAttribute('webkit-playsinline', '');
         modalVideo.setAttribute('preload', 'metadata');
         modalVideo.muted = false;
-        
+
         modalVideo.load();
         modalVideo.play().catch(error => {
             console.warn('Video autoplay prevented:', error);
@@ -245,6 +249,133 @@ function showQR(qrPath, qrTitle) {
     openModal(qrPath, qrTitle, 'image');
 }
 
+// Función para manejar el botón de omitir con PIN
+function handleSkip() {
+    const pinModal = document.getElementById('pin-modal');
+    const pinInput = document.getElementById('pin-input');
+    const pinError = document.getElementById('pin-error');
+
+    if (pinModal) {
+        pinModal.classList.add('active');
+        if (pinInput) {
+            pinInput.value = '';
+            pinInput.focus();
+        }
+        if (pinError) {
+            pinError.textContent = '';
+        }
+    }
+}
+
+// Función para validar PIN
+function validatePIN() {
+    const pinInput = document.getElementById('pin-input');
+    const pinError = document.getElementById('pin-error');
+    const pinModal = document.getElementById('pin-modal');
+
+    const pin = pinInput.value.trim();
+
+    if (pin === '3009') {
+        // PIN correcto
+        currentQuestionIndex = questions.length;
+        showScreen('reveal');
+        pinModal.classList.remove('active');
+        if (skipBtn) {
+            skipBtn.classList.add('hidden');
+        }
+    } else {
+        // PIN incorrecto
+        pinError.textContent = 'PIN incorrecto ❌';
+        pinInput.value = '';
+        setTimeout(() => {
+            pinError.textContent = '';
+        }, 2000);
+    }
+}
+
+// Función para cerrar modal PIN
+function closePINModal() {
+    const pinModal = document.getElementById('pin-modal');
+    const pinInput = document.getElementById('pin-input');
+    const pinError = document.getElementById('pin-error');
+
+    if (pinModal) {
+        pinModal.classList.remove('active');
+    }
+    if (pinInput) {
+        pinInput.value = '';
+    }
+    if (pinError) {
+        pinError.textContent = '';
+    }
+}
+
+// Función para agregar media a la galería
+function addMediaToGallery() {
+    const fileInput = document.getElementById('media-upload');
+    const captionInput = document.getElementById('media-caption');
+    const gallery = document.querySelector('.photo-gallery');
+
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert('Por favor selecciona una imagen o video 📸');
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const caption = captionInput.value.trim() || 'Un momento especial 💕';
+
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+        const galleryItem = document.createElement('div');
+        galleryItem.className = 'gallery-item';
+
+        const isVideo = file.type.startsWith('video/');
+        const mediaURL = e.target.result;
+
+        if (isVideo) {
+            galleryItem.innerHTML = `
+                <video muted autoplay loop playsinline webkit-playsinline preload="metadata">
+                    <source src="${mediaURL}" type="${file.type}">
+                </video>
+                <div class="photo-overlay">${caption}</div>
+            `;
+            galleryItem.onclick = () => openModal(mediaURL, caption, 'video');
+        } else {
+            galleryItem.innerHTML = `
+                <img src="${mediaURL}" alt="Momento especial" loading="lazy">
+                <div class="photo-overlay">${caption}</div>
+            `;
+            galleryItem.onclick = () => openModal(mediaURL, caption, 'image');
+        }
+
+        // Insertar al final de la galería (antes de los videos especiales)
+        gallery.appendChild(galleryItem);
+
+        // Limpiar formulario
+        fileInput.value = '';
+        captionInput.value = '';
+
+        // Mensaje de éxito
+        alert('¡Recuerdo agregado con éxito! 💕');
+    };
+
+    reader.readAsDataURL(file);
+}
+
+// Función para actualizar la visibilidad del botón de omitir
+function updateSkipButtonVisibility() {
+    if (skipBtn) {
+        // Ocultar el botón si ya estamos en la pantalla de revelación o más adelante
+        if (currentScreen === 'reveal' || currentScreen === 'specialVideos' ||
+            currentScreen === 'confirmation' || currentScreen === 'tickets') {
+            skipBtn.classList.add('hidden');
+        } else {
+            skipBtn.classList.remove('hidden');
+        }
+    }
+}
+
 // CSS para animación de confeti
 const style = document.createElement('style');
 style.textContent = `
@@ -259,12 +390,19 @@ document.head.appendChild(style);
 // Event Listeners
 document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM cargado, inicializando...');
-    
+
     // Inicializar elementos
     initializeElements();
-    
+
+    // Inicializar botón de omitir
+    skipBtn = document.getElementById('skip-btn');
+    if (skipBtn) {
+        skipBtn.addEventListener('click', handleSkip);
+        console.log('Botón de omitir configurado');
+    }
+
     console.log('Botón start:', elements.startBtn);
-    
+
     // Botón de inicio
     if (elements.startBtn) {
         elements.startBtn.addEventListener('click', (e) => {
@@ -285,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Input de respuesta
     if (elements.questionInput) {
-        elements.questionInput.addEventListener('keypress', function(e) {
+        elements.questionInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 validateAnswer();
             }
@@ -312,9 +450,20 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Botón de confirmación
+    // Botón de confirmación (¡SÍ!)
     if (elements.yesBtn) {
         elements.yesBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Confirmación aceptada!');
+            showScreen('tickets');
+        });
+    }
+
+    // Botón de confirmación (Si)
+    const siBtn = document.getElementById('si-btn');
+    if (siBtn) {
+        siBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             console.log('Confirmación aceptada!');
@@ -328,24 +477,82 @@ document.addEventListener('DOMContentLoaded', function () {
             currentQuestionIndex = 0;
             showScreen('welcome');
             if (elements.questionInput) elements.questionInput.value = '';
+            // Mostrar el botón de omitir nuevamente
+            if (skipBtn) {
+                skipBtn.classList.remove('hidden');
+            }
         });
+    }
+
+    // Modal PIN event listeners
+    const pinSubmitBtn = document.getElementById('pin-submit');
+    const pinCancelBtn = document.getElementById('pin-cancel');
+    const pinInput = document.getElementById('pin-input');
+    const pinModal = document.getElementById('pin-modal');
+
+    if (pinSubmitBtn) {
+        pinSubmitBtn.addEventListener('click', validatePIN);
+    }
+
+    if (pinCancelBtn) {
+        pinCancelBtn.addEventListener('click', closePINModal);
+    }
+
+    if (pinInput) {
+        pinInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                validatePIN();
+            }
+        });
+    }
+
+    // Cerrar modal PIN al hacer clic fuera
+    if (pinModal) {
+        pinModal.addEventListener('click', function (e) {
+            if (e.target === pinModal) {
+                closePINModal();
+            }
+        });
+    }
+
+    // Botón de agregar media
+    const addMediaBtn = document.getElementById('add-media-btn');
+    if (addMediaBtn) {
+        addMediaBtn.addEventListener('click', addMediaToGallery);
+    }
+
+    // Botones de "Volver"
+    const backFromSpecialVideosBtn = document.getElementById('back-from-special-videos-btn');
+    const backFromConfirmationBtn = document.getElementById('back-from-confirmation-btn');
+    const backFromTicketsBtn = document.getElementById('back-from-tickets-btn');
+
+    if (backFromSpecialVideosBtn) {
+        backFromSpecialVideosBtn.addEventListener('click', () => showScreen('reveal'));
+    }
+
+    if (backFromConfirmationBtn) {
+        backFromConfirmationBtn.addEventListener('click', () => showScreen('specialVideos'));
+    }
+
+    if (backFromTicketsBtn) {
+        backFromTicketsBtn.addEventListener('click', () => showScreen('confirmation'));
     }
 
     // Modal event listeners
     const modal = document.getElementById('imageModal');
     const closeBtn = document.querySelector('.close');
-    
+
     if (closeBtn) {
         closeBtn.addEventListener('click', closeModal);
     }
-    
+
     if (modal) {
-        modal.addEventListener('click', function(e) {
+        modal.addEventListener('click', function (e) {
             if (e.target === modal) {
                 closeModal();
             }
         });
     }
-    
+
     console.log('Todos los event listeners configurados');
 });

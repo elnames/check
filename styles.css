@@ -55,6 +55,173 @@ body {
     overflow-y: auto;
 }
 
+/* Botón de omitir */
+.skip-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.skip-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.skip-btn.hidden {
+    display: none;
+}
+
+/* Modal de PIN */
+.pin-modal {
+    display: none;
+    position: fixed;
+    z-index: 3000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    align-items: center;
+    justify-content: center;
+}
+
+.pin-modal.active {
+    display: flex;
+}
+
+.pin-modal-content {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 40px 30px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pin-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: white;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.pin-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    margin-bottom: 25px;
+}
+
+.pin-input {
+    width: 100%;
+    max-width: 200px;
+    padding: 15px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 10px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.pin-input:focus {
+    outline: none;
+    border-color: #ff6b9d;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(255, 107, 157, 0.3);
+}
+
+.pin-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 5px;
+}
+
+.pin-error {
+    color: #ff6b9d;
+    font-size: 0.9rem;
+    min-height: 20px;
+    margin-bottom: 10px;
+    animation: shake 0.5s ease-in-out;
+}
+
+.pin-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-pin-primary, .btn-pin-secondary {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.btn-pin-primary {
+    background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+    color: white;
+    box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3);
+}
+
+.btn-pin-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(255, 107, 157, 0.4);
+}
+
+.btn-pin-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-pin-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
 /* Animación de fondo con estrellas */
 body::before {
     content: '';
@@ -110,7 +277,7 @@ body::before {
 .screen.active {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     padding: 20px;
     box-sizing: border-box;
@@ -131,6 +298,11 @@ body::before {
 /* Pantalla de bienvenida */
 #welcome-screen {
     color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
 }
 
 .heart-container {
@@ -193,12 +365,16 @@ body::before {
     font-weight: 700;
     margin-bottom: 20px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 100%;
 }
 
 .subtitle {
     font-size: 1.2rem;
     margin-bottom: 40px;
     opacity: 0.9;
+    text-align: center;
+    width: 100%;
 }
 
 /* Botones */
@@ -216,6 +392,8 @@ body::before {
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+    display: block;
+    margin: 0 auto;
 }
 
 .btn-primary {
@@ -393,6 +571,110 @@ body::before {
     max-width: 100%;
     padding: 20px;
     box-sizing: border-box;
+}
+
+/* Sección de subida de archivos */
+.upload-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    margin: 30px 0;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.upload-section:hover {
+    border-color: rgba(255, 107, 157, 0.5);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.upload-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.8rem;
+    color: white;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.upload-input {
+    width: 100%;
+    max-width: 350px;
+    padding: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-input::-webkit-file-upload-button {
+    background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 15px;
+    cursor: pointer;
+    margin-right: 10px;
+    font-weight: 500;
+}
+
+.upload-input:hover {
+    border-color: #ff6b9d;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.upload-caption {
+    width: 100%;
+    max-width: 350px;
+    padding: 15px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.upload-caption:focus {
+    outline: none;
+    border-color: #ff6b9d;
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 20px rgba(255, 107, 157, 0.3);
+}
+
+.upload-caption::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-upload {
+    padding: 15px 30px;
+    background: linear-gradient(45deg, #6bcf7f, #4d96ff);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(107, 207, 127, 0.3);
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+.btn-upload:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(107, 207, 127, 0.4);
 }
 
 /* Galería de fotos */
@@ -1035,7 +1317,7 @@ body::before {
     text-align: center;
 }
 
-/* Responsive */
+/* Responsive para tablets */
 @media (max-width: 768px) {
     .title {
         font-size: 2.5rem;
@@ -1112,19 +1394,45 @@ body::before {
         grid-template-columns: 1fr;
         gap: 20px;
     }
+
+    .upload-section {
+        padding: 20px 15px;
+        margin: 20px 0;
+    }
+
+    .upload-title {
+        font-size: 1.4rem;
+    }
+
+    .upload-input,
+    .upload-caption {
+        max-width: 100%;
+    }
 }
 
+/* Responsive específico para iPhone y pantallas pequeñas */
 @media (max-width: 480px) {
     .container {
-        padding: 10px;
+        padding: 5px;
+    }
+
+    .screen {
+        padding: 15px 10px;
     }
 
     .title {
         font-size: 2rem;
+        text-align: center;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+        text-align: center;
     }
 
     .heart-container {
         gap: 10px;
+        justify-content: center;
     }
 
     .heart {
@@ -1144,6 +1452,197 @@ body::before {
 
     .heart::after {
         left: -12.5px;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+        max-width: 280px;
+        padding: 16px 25px;
+        font-size: 0.95rem;
+        margin: 10px auto;
+    }
+
+    .questions-container {
+        padding: 25px 15px;
+        max-width: 95%;
+        margin: 0 auto;
+    }
+
+    .questions-container h2 {
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .question-hint {
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    #question-input {
+        width: 100%;
+        max-width: 100%;
+        font-size: 0.95rem;
+    }
+
+    .photo-gallery {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 0;
+    }
+
+    .gallery-item {
+        aspect-ratio: 1;
+    }
+
+    .photo-overlay {
+        font-size: 0.75rem;
+        padding: 10px 5px 5px;
+    }
+
+    .reveal-title {
+        font-size: 2rem;
+        text-align: center;
+    }
+
+    .reveal-subtitle {
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .upload-section {
+        padding: 20px 10px;
+        margin: 20px 5px;
+    }
+
+    .upload-title {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .upload-input,
+    .upload-caption {
+        width: 100%;
+        max-width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .btn-upload {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .special-videos-container {
+        padding: 20px 10px;
+        margin: 5px;
+    }
+
+    .special-video {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 15px;
+    }
+
+    .video-caption {
+        font-size: 0.95rem;
+        text-align: center;
+        margin-top: 10px;
+    }
+
+    .message-container {
+        padding: 20px 15px;
+        margin: 20px 5px;
+    }
+
+    .special-message {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+
+    .confirmation-container {
+        padding: 30px 15px;
+        max-width: 95%;
+        margin: 0 auto;
+    }
+
+    .confirmation-title {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    #yes-btn {
+        font-size: 1.2rem;
+        padding: 18px 35px;
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .tickets-container {
+        padding: 15px 10px;
+    }
+
+    .tickets-title {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+
+    .ticket-card {
+        padding: 20px 15px;
+        margin: 15px 5px;
+    }
+
+    .ticket-header h3 {
+        font-size: 1.4rem;
+        text-align: center;
+    }
+
+    .ticket-details {
+        text-align: center;
+    }
+
+    .ticket-details p {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+    }
+
+    .download-btn {
+        width: 100%;
+        max-width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .romantic-message {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+
+    .modal-caption {
+        font-size: 1.2rem;
+        padding: 15px 10px;
+    }
+
+    .skip-btn {
+        top: 10px;
+        right: 10px;
+        padding: 10px 15px;
+        font-size: 0.8rem;
+    }
+
+    .pin-modal-content {
+        width: 95%;
+        padding: 30px 20px;
+    }
+
+    .pin-title {
+        font-size: 1.6rem;
+    }
+
+    .pin-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .pin-input {
+        max-width: 180px;
+        font-size: 1.3rem;
     }
 }
 
@@ -1291,5 +1790,12 @@ body::before {
         padding: 20px 15px;
         margin: 15px auto;
         max-width: 95%;
+    }
+
+    .skip-btn {
+        top: 10px;
+        right: 10px;
+        padding: 10px 16px;
+        font-size: 0.85rem;
     }
 }
