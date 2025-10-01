@@ -377,9 +377,12 @@ function renderUserMedia() {
     const gallery = document.querySelector('.photo-gallery');
     if (!gallery) return;
 
-    // Eliminar solo los items de usuario previamente agregados
+    // Eliminar solo los items de usuario previamente agregados (pero no el botón de agregar)
     const userItems = gallery.querySelectorAll('.gallery-item[data-user-media]');
     userItems.forEach(item => item.remove());
+
+    // Buscar el botón de agregar recuerdo
+    const addButton = gallery.querySelector('.add-memory-btn');
 
     // Agregar todos los medias del usuario
     userMedia.forEach((media) => {
@@ -412,6 +415,7 @@ function renderUserMedia() {
         // Long press para editar/eliminar
         let pressTimer;
         galleryItem.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevenir selección de texto
             pressTimer = setTimeout(() => showMediaActions(media.id, media), 500);
         });
 
@@ -433,7 +437,12 @@ function renderUserMedia() {
             clearTimeout(pressTimer);
         });
 
-        gallery.appendChild(galleryItem);
+        // Insertar ANTES del botón de agregar (para que el botón quede al final)
+        if (addButton) {
+            gallery.insertBefore(galleryItem, addButton);
+        } else {
+            gallery.appendChild(galleryItem);
+        }
     });
 }
 
@@ -445,8 +454,8 @@ function showMediaActions(mediaId, media) {
         <div class="media-actions-content">
             <h3>¿Qué deseas hacer?</h3>
             <p class="media-caption-preview">"${media.caption}"</p>
-            <button class="btn-action btn-edit" onclick="editMedia(${mediaId})">✏️ Editar Título</button>
-            <button class="btn-action btn-delete" onclick="deleteMedia(${mediaId})">🗑️ Eliminar</button>
+            <button class="btn-action btn-edit" onclick="editMedia('${mediaId}')">✏️ Editar Título</button>
+            <button class="btn-action btn-delete" onclick="deleteMedia('${mediaId}')">🗑️ Eliminar</button>
             <button class="btn-action btn-cancel" onclick="closeMediaActions()">Cancelar</button>
         </div>
     `;
@@ -572,7 +581,7 @@ async function addMediaToGallery() {
                 addBtn.disabled = false;
                 return;
             }
-            
+
             const reader = new FileReader();
             mediaURL = await new Promise((resolve, reject) => {
                 reader.onload = (e) => resolve(e.target.result);
@@ -597,7 +606,7 @@ async function addMediaToGallery() {
 
         // Guardar en Firebase
         const docId = await saveMediaToFirebase(newMedia);
-        
+
         // Agregar al array local con el ID de Firebase
         newMedia.id = docId;
         userMedia.unshift(newMedia);
@@ -620,7 +629,7 @@ async function addMediaToGallery() {
         console.error('Error al agregar media:', error);
         addBtn.innerHTML = originalText;
         addBtn.disabled = false;
-        
+
         if (error.message && error.message.includes('1048487')) {
             alert('⚠️ El archivo es muy grande. Por favor selecciona uno más pequeño o de menor calidad.');
         } else {
