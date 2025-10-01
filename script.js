@@ -335,6 +335,56 @@ function closeUploadModal() {
     if (uploadModal) {
         uploadModal.classList.remove('active');
     }
+    
+    // Limpiar previsualización
+    removePreview();
+}
+
+// Función para mostrar previsualización del archivo seleccionado
+function showPreview(file) {
+    const previewContainer = document.getElementById('preview-container');
+    const previewImage = document.getElementById('preview-image');
+    const previewVideo = document.getElementById('preview-video');
+    
+    if (!file) return;
+    
+    const isVideo = file.type.startsWith('video/');
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+        if (isVideo) {
+            previewVideo.src = e.target.result;
+            previewVideo.style.display = 'block';
+            previewImage.style.display = 'none';
+        } else {
+            previewImage.src = e.target.result;
+            previewImage.style.display = 'block';
+            previewVideo.style.display = 'none';
+        }
+        
+        previewContainer.style.display = 'block';
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+// Función para quitar la previsualización
+function removePreview() {
+    const previewContainer = document.getElementById('preview-container');
+    const previewImage = document.getElementById('preview-image');
+    const previewVideo = document.getElementById('preview-video');
+    const fileInput = document.getElementById('media-upload');
+    
+    if (previewContainer) previewContainer.style.display = 'none';
+    if (previewImage) {
+        previewImage.src = '';
+        previewImage.style.display = 'none';
+    }
+    if (previewVideo) {
+        previewVideo.src = '';
+        previewVideo.style.display = 'none';
+    }
+    if (fileInput) fileInput.value = '';
 }
 
 // Función para cargar medias guardados desde Firebase
@@ -363,26 +413,26 @@ async function loadUserMedia() {
 async function uploadToCloudinary(file, type) {
     try {
         console.log('📤 Subiendo a Cloudinary:', file.name);
-        
+
         // Crear FormData
         const formData = new FormData();
         formData.append('file', file);
         formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
         formData.append('folder', 'propuesta-indecente');
-        
+
         // Subir a Cloudinary
         const response = await fetch(CLOUDINARY_UPLOAD_URL, {
             method: 'POST',
             body: formData
         });
-        
+
         if (!response.ok) {
             throw new Error(`Error al subir: ${response.status}`);
         }
-        
+
         const data = await response.json();
         console.log('✅ Archivo subido a Cloudinary:', data.secure_url);
-        
+
         return data.secure_url;
     } catch (error) {
         console.error('❌ Error subiendo a Cloudinary:', error);
@@ -844,6 +894,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const addMediaBtn = document.getElementById('add-media-btn');
     if (addMediaBtn) {
         addMediaBtn.addEventListener('click', addMediaToGallery);
+    }
+    
+    // Event listener para previsualización al seleccionar archivo
+    const mediaUploadInput = document.getElementById('media-upload');
+    if (mediaUploadInput) {
+        mediaUploadInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                showPreview(file);
+            }
+        });
     }
 
     // Botones de "Volver"
