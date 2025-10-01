@@ -318,7 +318,7 @@ async function loadUserMedia() {
     try {
         console.log('Cargando medias desde Firebase...');
         const snapshot = await db.collection('memories').orderBy('timestamp', 'desc').get();
-        
+
         userMedia = [];
         snapshot.forEach(doc => {
             userMedia.push({
@@ -326,7 +326,7 @@ async function loadUserMedia() {
                 ...doc.data()
             });
         });
-        
+
         console.log(`${userMedia.length} recuerdos cargados desde Firebase`);
         renderUserMedia();
     } catch (error) {
@@ -444,14 +444,14 @@ function closeMediaActions() {
 async function editMedia(mediaId) {
     const media = userMedia.find(m => m.id === mediaId);
     if (!media) return;
-    
+
     const newCaption = prompt('Nuevo título:', media.caption);
     if (newCaption !== null && newCaption.trim() !== '') {
         try {
             await db.collection('memories').doc(mediaId).update({
                 caption: newCaption.trim()
             });
-            
+
             // Actualizar localmente
             media.caption = newCaption.trim();
             renderUserMedia();
@@ -469,7 +469,7 @@ async function deleteMedia(mediaId) {
     if (confirm('¿Estás seguro de que quieres eliminar este recuerdo? 😢')) {
         try {
             await db.collection('memories').doc(mediaId).delete();
-            
+
             // Actualizar localmente
             userMedia = userMedia.filter(m => m.id !== mediaId);
             renderUserMedia();
@@ -518,7 +518,7 @@ async function addMediaToGallery() {
 
             // Guardar en Firebase
             const docId = await saveMediaToFirebase(newMedia);
-            
+
             // Agregar al array local con el ID de Firebase
             newMedia.id = docId;
             userMedia.unshift(newMedia); // Agregar al inicio
