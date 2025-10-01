@@ -359,6 +359,29 @@ async function loadUserMedia() {
     }
 }
 
+// Función para subir archivo a Firebase Storage
+async function uploadToFirebaseStorage(file, type) {
+    try {
+        const timestamp = Date.now();
+        const fileName = `${type}_${timestamp}_${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+        const storageRef = storage.ref(`memories/${fileName}`);
+        
+        console.log('Subiendo archivo a Storage:', fileName);
+        
+        // Subir archivo
+        const snapshot = await storageRef.put(file);
+        
+        // Obtener URL de descarga
+        const downloadURL = await snapshot.ref.getDownloadURL();
+        console.log('✅ Archivo subido a Storage:', downloadURL);
+        
+        return downloadURL;
+    } catch (error) {
+        console.error('❌ Error subiendo a Storage:', error);
+        throw error;
+    }
+}
+
 // Función para guardar un media en Firebase
 async function saveMediaToFirebase(media) {
     try {
@@ -540,14 +563,14 @@ function compressImage(file, maxWidth = 800, quality = 0.6) {
 
                 // Convertir a base64 con compresión
                 let compressedDataURL = canvas.toDataURL('image/jpeg', quality);
-                
+
                 // Si aún es muy grande, comprimir más
                 let currentQuality = quality;
                 while (compressedDataURL.length > 900000 && currentQuality > 0.1) {
                     currentQuality -= 0.1;
                     compressedDataURL = canvas.toDataURL('image/jpeg', currentQuality);
                 }
-                
+
                 console.log(`Imagen comprimida: ${Math.round(compressedDataURL.length / 1024)}KB, calidad: ${currentQuality.toFixed(1)}`);
                 resolve(compressedDataURL);
             };
@@ -559,7 +582,7 @@ function compressImage(file, maxWidth = 800, quality = 0.6) {
     });
 }
 
-// Función para agregar media a la galería
+// Función para agregar media a la galería usando Firebase Storage
 async function addMediaToGallery() {
     const fileInput = document.getElementById('media-upload');
     const captionInput = document.getElementById('media-caption');
@@ -580,50 +603,39 @@ async function addMediaToGallery() {
 
     try {
         const isVideo = file.type.startsWith('video/');
-        let mediaURL;
-
-        if (isVideo) {
-            // Para videos, leer directamente (advertir si es muy grande)
-            if (file.size > 5 * 1024 * 1024) { // 5MB
-                alert('⚠️ El video es muy grande. Por favor selecciona un video más pequeño (máx 5MB).');
-                addBtn.innerHTML = originalText;
-                addBtn.disabled = false;
-                return;
-            }
-
-            const reader = new FileReader();
-            mediaURL = await new Promise((resolve, reject) => {
-                reader.onload = (e) => resolve(e.target.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        } else {
-            // Para imágenes, comprimir
-            addBtn.innerHTML = '⏳ Comprimiendo...';
-            mediaURL = await compressImage(file);
-        }
-
-        addBtn.innerHTML = '⏳ Guardando...';
-
-        // Verificar tamaño antes de subir
-        if (mediaURL.length > 1000000) { // ~1MB
+        
+        // Validar tamaño de video (máx 10MB para Storage)
+        if (isVideo && file.size > 10 * 1024 * 1024) {
+            alert('⚠️ El video es muy grande. Por favor selecciona un video más pequeño (máx 10MB).');
             addBtn.innerHTML = originalText;
             addBtn.disabled = false;
-            alert('⚠️ El archivo es muy grande incluso después de comprimir. Intenta con una foto más pequeña.');
+            return;
+        }
+        
+        // Validar tamaño de imagen (máx 5MB para Storage)
+        if (!isVideo && file.size > 5 * 1024 * 1024) {
+            alert('⚠️ La imagen es muy grande. Por favor selecciona una imagen más pequeña (máx 5MB).');
+            addBtn.innerHTML = originalText;
+            addBtn.disabled = false;
             return;
         }
 
-        // Crear objeto de media
+        // Subir archivo a Firebase Storage
+        addBtn.innerHTML = '☁️ Subiendo a la nube...';
+        const downloadURL = await uploadToFirebaseStorage(file, isVideo ? 'video' : 'image');
+
+        // Crear objeto de media con la URL de Storage
+        addBtn.innerHTML = '⏳ Guardando...';
         const newMedia = {
-            url: mediaURL,
+            url: downloadURL,
             caption: caption,
             type: isVideo ? 'video' : 'image',
             timestamp: Date.now()
         };
 
-        // Guardar en Firebase
+        // Guardar metadata en Firestore
         const docId = await saveMediaToFirebase(newMedia);
-        
+
         // Agregar al array local con el ID de Firebase
         newMedia.id = docId;
         userMedia.unshift(newMedia);
@@ -650,14 +662,14 @@ async function addMediaToGallery() {
         let errorMsg = '⚠️ Error al subir el recuerdo.';
         
         if (error.message) {
-            if (error.message.includes('1048487') || error.message.includes('too large')) {
-                errorMsg = '⚠️ El archivo es muy grande. Intenta con una foto más pequeña o de menor resolución.';
-            } else if (error.message.includes('permission') || error.message.includes('denied')) {
-                errorMsg = '⚠️ Error de permisos. Verifica la configuración de Firebase.';
+            if (error.message.includes('storage/unauthorized')) {
+                errorMsg = '⚠️ Error de permisos en Storage. Verifica las reglas de seguridad de Firebase.';
+            } else if (error.message.includes('storage/quota-exceeded')) {
+                errorMsg = '⚠️ Se acabó el espacio de almacenamiento.';
             } else if (error.message.includes('network')) {
                 errorMsg = '⚠️ Error de conexión. Verifica tu internet.';
             } else {
-                errorMsg += '\n' + error.message;
+                errorMsg += ' ' + error.message;
             }
         }
         
