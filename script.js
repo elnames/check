@@ -313,18 +313,39 @@ function closePINModal() {
     }
 }
 
-// Función para cargar medias guardados desde localStorage
-function loadUserMedia() {
-    const savedMedia = localStorage.getItem('userMedia');
-    if (savedMedia) {
-        userMedia = JSON.parse(savedMedia);
+// Función para cargar medias guardados desde Firebase
+async function loadUserMedia() {
+    try {
+        console.log('Cargando medias desde Firebase...');
+        const snapshot = await db.collection('memories').orderBy('timestamp', 'desc').get();
+        
+        userMedia = [];
+        snapshot.forEach(doc => {
+            userMedia.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        console.log(`${userMedia.length} recuerdos cargados desde Firebase`);
         renderUserMedia();
+    } catch (error) {
+        console.error('Error al cargar medias desde Firebase:', error);
+        alert('⚠️ Error al cargar los recuerdos. Verifica tu conexión.');
     }
 }
 
-// Función para guardar medias en localStorage
-function saveUserMedia() {
-    localStorage.setItem('userMedia', JSON.stringify(userMedia));
+// Función para guardar un media en Firebase
+async function saveMediaToFirebase(media) {
+    try {
+        console.log('Guardando media en Firebase...');
+        const docRef = await db.collection('memories').add(media);
+        console.log('Media guardado con ID:', docRef.id);
+        return docRef.id;
+    } catch (error) {
+        console.error('Error al guardar en Firebase:', error);
+        throw error;
+    }
 }
 
 // Función para renderizar medias del usuario en la galería
@@ -337,11 +358,11 @@ function renderUserMedia() {
     userItems.forEach(item => item.remove());
 
     // Agregar todos los medias del usuario
-    userMedia.forEach((media, index) => {
+    userMedia.forEach((media) => {
         const galleryItem = document.createElement('div');
         galleryItem.className = 'gallery-item';
         galleryItem.setAttribute('data-user-media', 'true');
-        galleryItem.setAttribute('data-media-id', index);
+        galleryItem.setAttribute('data-media-id', media.id);
 
         if (media.type === 'video') {
             galleryItem.innerHTML = `
@@ -367,7 +388,7 @@ function renderUserMedia() {
         // Long press para editar/eliminar
         let pressTimer;
         galleryItem.addEventListener('touchstart', (e) => {
-            pressTimer = setTimeout(() => showMediaActions(index, media), 500);
+            pressTimer = setTimeout(() => showMediaActions(media.id, media), 500);
         });
 
         galleryItem.addEventListener('touchend', () => {
@@ -376,7 +397,7 @@ function renderUserMedia() {
 
         galleryItem.addEventListener('mousedown', (e) => {
             if (e.button === 0) { // Click izquierdo
-                pressTimer = setTimeout(() => showMediaActions(index, media), 500);
+                pressTimer = setTimeout(() => showMediaActions(media.id, media), 500);
             }
         });
 
@@ -420,30 +441,49 @@ function closeMediaActions() {
 }
 
 // Función para editar el título de un media
-function editMedia(mediaId) {
-    const newCaption = prompt('Nuevo título:', userMedia[mediaId].caption);
+async function editMedia(mediaId) {
+    const media = userMedia.find(m => m.id === mediaId);
+    if (!media) return;
+    
+    const newCaption = prompt('Nuevo título:', media.caption);
     if (newCaption !== null && newCaption.trim() !== '') {
-        userMedia[mediaId].caption = newCaption.trim();
-        saveUserMedia();
-        renderUserMedia();
-        closeMediaActions();
-        alert('✅ Título actualizado!');
+        try {
+            await db.collection('memories').doc(mediaId).update({
+                caption: newCaption.trim()
+            });
+            
+            // Actualizar localmente
+            media.caption = newCaption.trim();
+            renderUserMedia();
+            closeMediaActions();
+            alert('✅ Título actualizado!');
+        } catch (error) {
+            console.error('Error al actualizar:', error);
+            alert('⚠️ Error al actualizar el título');
+        }
     }
 }
 
 // Función para eliminar un media
-function deleteMedia(mediaId) {
+async function deleteMedia(mediaId) {
     if (confirm('¿Estás seguro de que quieres eliminar este recuerdo? 😢')) {
-        userMedia.splice(mediaId, 1);
-        saveUserMedia();
-        renderUserMedia();
-        closeMediaActions();
-        alert('🗑️ Recuerdo eliminado');
+        try {
+            await db.collection('memories').doc(mediaId).delete();
+            
+            // Actualizar localmente
+            userMedia = userMedia.filter(m => m.id !== mediaId);
+            renderUserMedia();
+            closeMediaActions();
+            alert('🗑️ Recuerdo eliminado');
+        } catch (error) {
+            console.error('Error al eliminar:', error);
+            alert('⚠️ Error al eliminar el recuerdo');
+        }
     }
 }
 
 // Función para agregar media a la galería
-function addMediaToGallery() {
+async function addMediaToGallery() {
     const fileInput = document.getElementById('media-upload');
     const captionInput = document.getElementById('media-caption');
 
@@ -455,33 +495,54 @@ function addMediaToGallery() {
     const file = fileInput.files[0];
     const caption = captionInput.value.trim() || 'Un momento especial 💕';
 
-    const reader = new FileReader();
+    // Mostrar loading
+    const addBtn = document.getElementById('add-media-btn');
+    const originalText = addBtn.innerHTML;
+    addBtn.innerHTML = '⏳ Subiendo...';
+    addBtn.disabled = true;
 
-    reader.onload = function (e) {
-        const isVideo = file.type.startsWith('video/');
-        const mediaURL = e.target.result;
+    try {
+        const reader = new FileReader();
 
-        // Agregar al array de medias del usuario
-        const newMedia = {
-            url: mediaURL,
-            caption: caption,
-            type: isVideo ? 'video' : 'image',
-            timestamp: Date.now()
+        reader.onload = async function (e) {
+            const isVideo = file.type.startsWith('video/');
+            const mediaURL = e.target.result;
+
+            // Crear objeto de media
+            const newMedia = {
+                url: mediaURL,
+                caption: caption,
+                type: isVideo ? 'video' : 'image',
+                timestamp: Date.now()
+            };
+
+            // Guardar en Firebase
+            const docId = await saveMediaToFirebase(newMedia);
+            
+            // Agregar al array local con el ID de Firebase
+            newMedia.id = docId;
+            userMedia.unshift(newMedia); // Agregar al inicio
+            renderUserMedia();
+
+            // Limpiar formulario
+            fileInput.value = '';
+            captionInput.value = '';
+
+            // Restaurar botón
+            addBtn.innerHTML = originalText;
+            addBtn.disabled = false;
+
+            // Mensaje de éxito
+            alert('¡Recuerdo agregado con éxito! 💕');
         };
 
-        userMedia.push(newMedia);
-        saveUserMedia();
-        renderUserMedia();
-
-        // Limpiar formulario
-        fileInput.value = '';
-        captionInput.value = '';
-
-        // Mensaje de éxito
-        alert('¡Recuerdo agregado con éxito! 💕');
-    };
-
-    reader.readAsDataURL(file);
+        reader.readAsDataURL(file);
+    } catch (error) {
+        console.error('Error al agregar media:', error);
+        addBtn.innerHTML = originalText;
+        addBtn.disabled = false;
+        alert('⚠️ Error al subir el recuerdo. Intenta de nuevo.');
+    }
 }
 
 // Función para actualizar la visibilidad del botón de omitir
